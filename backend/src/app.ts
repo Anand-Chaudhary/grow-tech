@@ -50,6 +50,6 @@ app.use((err: any, _req: any, res: any, _next: any) => {
   })
 })
 
-app.use('/api/v1', apiRoutes)
+app.use('/api', apiRoutes)
 
 export default app
