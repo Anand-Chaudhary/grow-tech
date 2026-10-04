@@ -1,0 +1,304 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  WON
+  LOST
+  SPAM
+}
+
+enum PackageTier {
+  LAUNCH
+  GROWTH
+  SCALE
+  NOT_SURE
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MeasureSource {
+  LAB   // Lighthouse / PageSpeed lab run
+  FIELD // real-user data (CrUX)
+}
+
+enum DeviceStrategy {
+  MOBILE
+  DESKTOP
+}
+
+// ---------------------------------------------------------------------------
+// Embedded (composite) types: stored inside the parent document
+// ---------------------------------------------------------------------------
+
+type Utm {
+  source      String?
+  medium      String?
+  campaign    String?
+  term        String?
+  content     String?
+  referrer    String?
+  landingPath String?
+}
+
+type Seo {
+  title       String?
+  description String?
+  ogImageUrl  String?
+  canonical   String?
+  noIndex     Boolean @default(false)
+}
+
+type Metric {
+  label String // e.g. "Mobile LCP"
+  value String // e.g. "1.4 s" (only real, measured results)
+}
+
+// ---------------------------------------------------------------------------
+// Leads: "Book a free site review" form
+// ---------------------------------------------------------------------------
+
+model Lead {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  email        String
+  websiteUrl   String?
+  goal         String // "What are you hoping to grow?"
+  packageTier  PackageTier @default(NOT_SURE)
+  status       LeadStatus  @default(NEW)
+  consent      Boolean     @default(false) // agreed to be contacted about this request
+  utm          Utm?
+  notes        String? // internal notes
+  contactedAt  DateTime?
+  ipHash       String? // hashed, for spam/rate limiting only; never store raw IPs
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([email])
+  @@index([status, createdAt])
+  @@map("leads")
+}
+
+// ---------------------------------------------------------------------------
+// Pricing packages (Launch / Growth / Scale)
+// ---------------------------------------------------------------------------
+
+model Package {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  tier          PackageTier @unique
+  name          String
+  bestFor       String
+  features      String[]
+  priceFrom     Int? // whole currency units; null means custom quote
+  currency      String      @default("USD")
+  priceNote     String? // e.g. "Excludes hosting, domain, third-party tools"
+  isHighlighted Boolean     @default(false) // the one recommended plan
+  isActive      Boolean     @default(true)
+  sortOrder     Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([isActive, sortOrder])
+  @@map("packages")
+}
+
+// ---------------------------------------------------------------------------
+// Services (the four bento tiles)
+// ---------------------------------------------------------------------------
+
+model Service {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String   @unique
+  title       String
+  description String
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+  @@map("services")
+}
+
+// ---------------------------------------------------------------------------
+// Case studies and testimonials
+// ---------------------------------------------------------------------------
+
+model CaseStudy {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  slug          String        @unique
+  clientName    String
+  industry      String
+  challenge     String
+  solution      String
+  resultSummary String
+  metrics       Metric[] // real, measured outcomes only
+  techStack     String[]
+  liveUrl       String?
+  coverImageUrl String?
+  seo           Seo?
+  isPublished   Boolean       @default(false)
+  publishedAt   DateTime?
+  sortOrder     Int           @default(0)
+  testimonials  Testimonial[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([isPublished, sortOrder])
+  @@map("case_studies")
+}
+
+model Testimonial {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  authorName  String
+  authorRole  String?
+  company     String?
+  quote       String
+  avatarUrl   String?
+  caseStudyId String?    @db.ObjectId
+  caseStudy   CaseStudy? @relation(fields: [caseStudyId], references: [id], onDelete: SetNull)
+  isPublished Boolean    @default(false) // only publish with the client's permission
+  sortOrder   Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([isPublished, sortOrder])
+  @@index([caseStudyId])
+  @@map("testimonials")
+}
+
+// ---------------------------------------------------------------------------
+// FAQ
+// ---------------------------------------------------------------------------
+
+model Faq {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  question  String
+  answer    String
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+  @@map("faqs")
+}
+
+// ---------------------------------------------------------------------------
+// Blog posts: the supporting SEO content (cost guide, template vs custom, etc.)
+// ---------------------------------------------------------------------------
+
+model Post {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  slug           String     @unique
+  title          String
+  excerpt        String
+  contentMd      String // markdown body
+  coverImageUrl  String?
+  tags           String[]
+  authorName     String
+  readingMinutes Int?
+  status         PostStatus @default(DRAFT)
+  publishedAt    DateTime?
+  seo            Seo?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([status, publishedAt])
+  @@map("posts")
+}
+
+// ---------------------------------------------------------------------------
+// Performance snapshots: feeds the public scorecard section.
+// Store only measured values, and label lab vs field data.
+// ---------------------------------------------------------------------------
+
+model PerfSnapshot {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  url         String
+  strategy    DeviceStrategy
+  source      MeasureSource
+  lcpMs       Int // Largest Contentful Paint, milliseconds
+  inpMs       Int? // Interaction to Next Paint; may be missing in lab runs
+  cls         Float // Cumulative Layout Shift
+  perfScore   Int? // Lighthouse performance score, 0 to 100
+  a11yScore   Int? // Lighthouse accessibility score, 0 to 100
+  commitSha   String? // deploy that was measured
+  measuredAt  DateTime       @default(now())
+
+  @@index([url, strategy, measuredAt])
+  @@map("perf_snapshots")
+}
+
+// ---------------------------------------------------------------------------
+// Admin users: protect the /api/admin/* routes
+// ---------------------------------------------------------------------------
+
+enum AdminRole {
+  OWNER  // everything, including user management and deleting leads
+  EDITOR // content and leads, no user management or lead deletion
+}
+
+model AdminUser {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  email        String    @unique
+  name         String
+  passwordHash String // argon2id or bcrypt hash, never the password
+  role         AdminRole @default(EDITOR)
+  isActive     Boolean   @default(true)
+  tokenVersion Int       @default(0) // bump to invalidate every existing session
+  lastLoginAt  DateTime?
+  invitesSent  AdminInvite[]
+  resetTokens  PasswordResetToken[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("admin_users")
+}
+
+// One-time invite to join as an admin. Only the SHA-256 hash of the token is stored.
+model AdminInvite {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  email       String
+  role        AdminRole @default(EDITOR)
+  tokenHash   String    @unique
+  invitedById String    @db.ObjectId
+  invitedBy   AdminUser @relation(fields: [invitedById], references: [id])
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([email])
+  @@map("admin_invites")
+}
+
+// One-time password reset link. Only the SHA-256 hash of the token is stored.
+model PasswordResetToken {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
