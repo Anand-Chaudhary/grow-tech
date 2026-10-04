@@ -1,5 +1,5 @@
 import prisma from '../db/prisma';
-import { Lead } from '../generated/prisma/client';
+import { Lead, PackageTier } from '../generated/prisma/client';
 
 const duplicateMap = new Map<string, number>(); // email -> timestamp (ms)
 const DUPLICATE_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
@@ -9,7 +9,7 @@ export const createLead = async (data: {
   email: string;
   websiteUrl?: string;
   goal: string;
-  packageTier?: string;
+  packageTier?: PackageTier;
   utm?: any;
 }) => {
   const now = Date.now();

@@ -36,7 +36,7 @@ router.get('/case-studies', async (req: Request, res: Response) => {
 });
 
 router.get('/case-studies/:slug', async (req: Request, res: Response) => {
-  const cs = await publicService.getCaseStudyBySlug(req.params.slug);
+  const cs = await publicService.getCaseStudyBySlug(req.params.slug as string);
   if (!cs) {
     return res.status(404).json({ success: false, message: 'Not found', status: 404, data: null });
   }
@@ -51,7 +51,7 @@ router.get('/posts', async (req: Request, res: Response) => {
 });
 
 router.get('/posts/:slug', async (req: Request, res: Response) => {
-  const post = await publicService.getPostBySlug(req.params.slug);
+  const post = await publicService.getPostBySlug(req.params.slug as string);
   if (!post) {
     return res.status(404).json({ success: false, message: 'Not found', status: 404, data: null });
   }

@@ -42,7 +42,6 @@ const main = async () => {
         sortOrder: 3,
       },
     ],
-    skipDuplicates: true,
   });
 
   // Services
@@ -53,7 +52,6 @@ const main = async () => {
       { slug: 'dev', title: 'Development', description: 'Full‑stack development', isActive: true, sortOrder: 3 },
       { slug: 'marketing', title: 'Marketing', description: 'Growth marketing', isActive: true, sortOrder: 4 },
     ],
-    skipDuplicates: true,
   });
 
   // FAQs
@@ -62,7 +60,6 @@ const main = async () => {
       { question: 'What is Grow Tech?', answer: 'We build digital products.', isActive: true, sortOrder: 1 },
       { question: 'How do I start?', answer: 'Contact us via the lead form.', isActive: true, sortOrder: 2 },
     ],
-    skipDuplicates: true,
   });
 
   // Testimonials
@@ -78,7 +75,6 @@ const main = async () => {
         sortOrder: 1,
       },
     ],
-    skipDuplicates: true,
   });
 
   // Case Studies
@@ -91,14 +87,13 @@ const main = async () => {
         challenge: 'Low conversion',
         solution: 'Redesign checkout',
         resultSummary: '30% increase in sales',
-        metrics: { create: [{ label: 'Conversion', value: '30%' }] },
+        metrics: [{ label: 'Conversion', value: '30%' }],
         techStack: ['React', 'Node'],
         isPublished: true,
         publishedAt: new Date(),
         sortOrder: 1,
       },
     ],
-    skipDuplicates: true,
   });
 
   // Posts
@@ -116,7 +111,6 @@ const main = async () => {
         sortOrder: 1,
       },
     ],
-    skipDuplicates: true,
   });
 
   // Default admin if none exists

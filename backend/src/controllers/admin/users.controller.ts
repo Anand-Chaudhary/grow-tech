@@ -16,7 +16,7 @@ router.get('/', async (_req: Request, res: Response) => {
 
 router.patch('/:id', validate(adminUserPatchSchema), async (req: Request, res: Response) => {
   try {
-    const updated = await userService.updateAdmin(req.params.id, req.body);
+    const updated = await userService.updateAdmin(req.params.id as string, req.body);
     return res.json({ success: true, message: 'Admin updated', status: 200, data: { id: updated.id, name: updated.name, email: updated.email, role: updated.role, isActive: updated.isActive } });
   } catch (err: any) {
     const status = err.status || 500;

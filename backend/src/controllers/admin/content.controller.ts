@@ -11,29 +11,35 @@ router.use(requireRole(['OWNER', 'EDITOR']));
 
 // List resources
 router.get('/:resource', async (req: Request, res: Response) => {
-  const { resource } = req.params;
+  const resource = req.params.resource as string;
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 20;
   try {
     switch (resource) {
-      case 'packages':
+      case 'packages': {
         const pkgs = await contentService.listPackages();
         return res.json({ success: true, message: 'Packages', status: 200, data: pkgs });
-      case 'services':
+      }
+      case 'services': {
         const svcs = await contentService.listServices();
         return res.json({ success: true, message: 'Services', status: 200, data: svcs });
-      case 'faqs':
+      }
+      case 'faqs': {
         const faqs = await contentService.listFaqs();
         return res.json({ success: true, message: 'FAQs', status: 200, data: faqs });
-      case 'testimonials':
+      }
+      case 'testimonials': {
         const tms = await contentService.listTestimonials();
         return res.json({ success: true, message: 'Testimonials', status: 200, data: tms });
-      case 'case-studies':
+      }
+      case 'case-studies': {
         const cs = await contentService.listCaseStudies(page, limit);
         return res.json({ success: true, message: 'Case studies', status: 200, data: cs });
-      case 'posts':
+      }
+      case 'posts': {
         const posts = await contentService.listPosts(page, limit);
         return res.json({ success: true, message: 'Posts', status: 200, data: posts });
+      }
       default:
         return res.status(404).json({ success: false, message: 'Resource not found', status: 404, data: null });
     }
@@ -45,7 +51,8 @@ router.get('/:resource', async (req: Request, res: Response) => {
 
 // Get one
 router.get('/:resource/:id', async (req: Request, res: Response) => {
-  const { resource, id } = req.params;
+  const resource = req.params.resource as string;
+  const id = req.params.id as string;
   try {
     let item;
     switch (resource) {
@@ -82,7 +89,7 @@ router.get('/:resource/:id', async (req: Request, res: Response) => {
 
 // Create
 router.post('/:resource', validate(genericCreateSchema), async (req: Request, res: Response) => {
-  const { resource } = req.params;
+  const resource = req.params.resource as string;
   try {
     let created;
     switch (resource) {
@@ -116,7 +123,8 @@ router.post('/:resource', validate(genericCreateSchema), async (req: Request, re
 
 // Update
 router.patch('/:resource/:id', validate(genericUpdateSchema), async (req: Request, res: Response) => {
-  const { resource, id } = req.params;
+  const resource = req.params.resource as string;
+  const id = req.params.id as string;
   try {
     let updated;
     switch (resource) {
@@ -150,7 +158,8 @@ router.patch('/:resource/:id', validate(genericUpdateSchema), async (req: Reques
 
 // Delete
 router.delete('/:resource/:id', async (req: Request, res: Response) => {
-  const { resource, id } = req.params;
+  const resource = req.params.resource as string;
+  const id = req.params.id as string;
   try {
     switch (resource) {
       case 'packages':
@@ -183,7 +192,7 @@ router.delete('/:resource/:id', async (req: Request, res: Response) => {
 
 // Publish / Unpublish post endpoints
 router.post('/posts/:id/publish', async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const publishedAt = req.body.publishedAt;
   try {
     const post = await contentService.publishPost(id, publishedAt);
@@ -195,7 +204,7 @@ router.post('/posts/:id/publish', async (req: Request, res: Response) => {
 });
 
 router.post('/posts/:id/unpublish', async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   try {
     const post = await contentService.unpublishPost(id);
     return res.json({ success: true, message: 'Post unpublished', status: 200, data: post });

@@ -7,5 +7,5 @@ export const toTestimonialDto = (t: Testimonial) => ({
   company: t.company ?? null,
   quote: t.quote,
   avatarUrl: t.avatarUrl ?? null,
-  caseStudySlug: t.caseStudy?.slug ?? null,
+  // caseStudySlug omitted to avoid relation fetching
 });

@@ -24,7 +24,8 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 router.get('/:id', async (req: Request, res: Response) => {
-  const lead = await adminLeadService.getLeadById(req.params.id);
+  const id = req.params.id as string;
+  const lead = await adminLeadService.getLeadById(id);
   if (!lead) {
     return res.status(404).json({ success: false, message: 'Lead not found', status: 404, data: null });
   }
@@ -33,7 +34,8 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 router.patch('/:id', validate(leadPatchSchema), async (req: Request, res: Response) => {
   try {
-    const updated = await adminLeadService.updateLead(req.params.id, req.body);
+    const id = req.params.id as string;
+    const updated = await adminLeadService.updateLead(id, req.body);
     return res.json({ success: true, message: 'Lead updated', status: 200, data: updated });
   } catch (err: any) {
     const status = err.status || 500;
@@ -43,7 +45,8 @@ router.patch('/:id', validate(leadPatchSchema), async (req: Request, res: Respon
 
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
-    await adminLeadService.deleteLead(req.params.id);
+    const id = req.params.id as string;
+    await adminLeadService.deleteLead(id);
     return res.json({ success: true, message: 'Lead deleted', status: 200, data: null });
   } catch (err: any) {
     const status = err.status || 500;
