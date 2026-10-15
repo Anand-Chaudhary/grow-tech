@@ -1,39 +1,34 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 
 :root {
-  --bg-deep: #080E09;
-  --bg-card: #0F1A12;
-  --bg-card-hover: #16261A;
-  --forest: #142318;
-  --forest-light: #1E3324;
-  --leaf: #C8F169;
-  --leaf-glow: rgba(200, 241, 105, 0.35);
-  --emerald: #2E5A36;
-  --text-main: #F4FDF6;
-  --text-muted: #9BB3A2;
-  --border-subtle: rgba(200, 241, 105, 0.15);
-  --border-card: rgba(200, 241, 105, 0.2);
+  --bg-deep: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F7F9F3;
+  --forest: #F7F9F3;
+  --forest-light: #EEF3E6;
+  --leaf: #F9AD1B;
+  --leaf-glow: rgba(249, 173, 27, 0.35);
+  --emerald: #3D9129;
+  --text-main: #2E3A1B;
+  --text-muted: #3D9129;
+  --border-subtle: rgba(46, 58, 27, 0.12);
+  --border-card: rgba(46, 58, 27, 0.18);
 
   --background: var(--bg-deep);
   --foreground: var(--text-main);
 }
 
 @theme {
-  --color-deep: #080E09;
-  --color-card: #0F1A12;
-  --color-forest: #142318;
-  --color-forest-light: #1E3324;
-  --color-leaf: #C8F169;
-  --color-leaf-glow: rgba(200, 241, 105, 0.35);
-  --color-emerald: #2E5A36;
-  --color-text-main: #F4FDF6;
-  --color-text-muted: #9BB3A2;
-  --color-border-subtle: rgba(200, 241, 105, 0.15);
-
-  --font-serif: var(--font-instrument-serif), Georgia, serif;
-  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: var(--font-geist-mono), monospace;
+  --color-deep: #FFFFFF;
+  --color-card: #FFFFFF;
+  --color-forest: #F7F9F3;
+  --color-forest-light: #EEF3E6;
+  --color-leaf: #F9AD1B;
+  --color-leaf-glow: rgba(249, 173, 27, 0.35);
+  --color-emerald: #3D9129;
+  --color-text-main: #2E3A1B;
+  --color-text-muted: #3D9129;
+  --color-border-subtle: rgba(46, 58, 27, 0.12);
 }
 
 @layer base {
@@ -53,186 +48,4 @@
     color: var(--text-main);
     letter-spacing: -0.02em;
   }
-}
-
-/* Custom interactive buttons */
-.btn-primary-leaf {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 56px;
-  padding: 0 32px;
-  border-radius: 9999px;
-  background-color: var(--leaf);
-  color: #080E09;
-  font-weight: 600;
-  font-size: 16px;
-  border: 2px solid var(--leaf);
-  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 0 25px rgba(200, 241, 105, 0.3);
-  cursor: pointer;
-  text-decoration: none;
-}
-.btn-primary-leaf:hover {
-  background-color: transparent;
-  color: var(--leaf);
-  box-shadow: 0 0 35px rgba(200, 241, 105, 0.5);
-  transform: translateY(-2px);
-}
-
-.btn-secondary-outline {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 56px;
-  padding: 0 32px;
-  border-radius: 9999px;
-  background-color: rgba(20, 35, 24, 0.6);
-  color: var(--text-main);
-  border: 2px solid rgba(200, 241, 105, 0.3);
-  backdrop-filter: blur(12px);
-  font-weight: 500;
-  font-size: 16px;
-  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
-  text-decoration: none;
-}
-.btn-secondary-outline:hover {
-  border-color: var(--leaf);
-  background-color: var(--leaf);
-  color: #080E09;
-  box-shadow: 0 0 30px rgba(200, 241, 105, 0.3);
-  transform: translateY(-2px);
-}
-
-.btn-primary-ink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 56px;
-  padding: 0 32px;
-  border-radius: 9999px;
-  background-color: var(--leaf);
-  color: #080E09;
-  font-weight: 600;
-  font-size: 16px;
-  border: 2px solid var(--leaf);
-  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 0 25px rgba(200, 241, 105, 0.3);
-  cursor: pointer;
-  text-decoration: none;
-}
-.btn-primary-ink:hover {
-  background-color: transparent;
-  color: var(--leaf);
-  transform: translateY(-2px);
-}
-
-/* Glass card luxury styling */
-.glass-card {
-  background: rgba(15, 26, 18, 0.7);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(200, 241, 105, 0.18);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(200, 241, 105, 0.1);
-  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-.glass-card:hover {
-  border-color: rgba(200, 241, 105, 0.45);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(200, 241, 105, 0.1);
-  transform: translateY(-4px);
-}
-
-/* Glowing ambient meshes */
-.glow-orb-lime {
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(200, 241, 105, 0.15) 0%, rgba(200, 241, 105, 0) 70%);
-  filter: blur(80px);
-  pointer-events: none;
-}
-
-.glow-orb-emerald {
-  position: absolute;
-  width: 700px;
-  height: 700px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(46, 90, 54, 0.25) 0%, rgba(46, 90, 54, 0) 70%);
-  filter: blur(90px);
-  pointer-events: none;
-}
-
-/* Subtle grid pattern */
-.bg-grid-pattern {
-  background-size: 50px 50px;
-  background-image: 
-    linear-gradient(to right, rgba(200, 241, 105, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(200, 241, 105, 0.04) 1px, transparent 1px);
-}
-
-/* 3D curved gallery perspective */
-.curved-gallery-viewport {
-  perspective: 1600px;
-  perspective-origin: 50% 45%;
-}
-
-/* Infinite Smooth Marquee */
-@keyframes marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
-}
-
-@keyframes marquee-reverse {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0%); }
-}
-
-.marquee-container {
-  display: flex;
-  overflow: hidden;
-  user-select: none;
-  gap: 0;
-}
-
-.animate-marquee {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: space-around;
-  gap: 3rem;
-  min-width: 100%;
-  animation: marquee 32s linear infinite;
-}
-
-.animate-marquee-reverse {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: space-around;
-  gap: 3rem;
-  min-width: 100%;
-  animation: marquee-reverse 32s linear infinite;
-}
-
-.marquee-container:hover .animate-marquee,
-.marquee-container:hover .animate-marquee-reverse {
-  animation-play-state: paused;
-}
-
-/* Floating animation */
-@keyframes floatSlow {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(2deg); }
-}
-.animate-float-slow {
-  animation: floatSlow 6s ease-in-out infinite;
-}
-
-@keyframes floatReverse {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(15px) rotate(-2deg); }
-}
-.animate-float-reverse {
-  animation: floatReverse 7s ease-in-out infinite;
 }

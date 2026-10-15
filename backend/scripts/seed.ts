@@ -320,14 +320,6 @@ async function main() {
   // Admin User
   // ---------------------------------------------------------
 
-  /*
-   * This uses bcrypt.
-   *
-   * Make sure bcrypt is installed:
-   *
-   * npm install bcrypt
-   * npm install -D @types/bcrypt
-   */
 
   const bcrypt = await import('bcrypt');
 
