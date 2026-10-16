@@ -1,51 +1,54 @@
 @import "tailwindcss";
 
-:root {
-  --bg-deep: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --bg-card-hover: #F7F9F3;
-  --forest: #F7F9F3;
-  --forest-light: #EEF3E6;
-  --leaf: #F9AD1B;
-  --leaf-glow: rgba(249, 173, 27, 0.35);
-  --emerald: #3D9129;
-  --text-main: #2E3A1B;
-  --text-muted: #3D9129;
-  --border-subtle: rgba(46, 58, 27, 0.12);
-  --border-card: rgba(46, 58, 27, 0.18);
+@theme {
+  --font-serif: var(--font-fraunces), Georgia, Cambria, "Times New Roman", serif;
+  --font-sans: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
-  --background: var(--bg-deep);
-  --foreground: var(--text-main);
+  --color-cream: #FAF6EC;
+  --color-sand: #EFE8D8;
+  --color-stone: #D8CDB6;
+  --color-sage: #CFD8C4;
+  --color-forest: #243629;
+  --color-ink: #16130F;
+  --color-graphite: #5A554C;
+  --color-leaf: #3D9129;
+  --color-amber: #F9AD1B;
+  --color-line: #E2D9C6;
 }
 
-@theme {
-  --color-deep: #FFFFFF;
-  --color-card: #FFFFFF;
-  --color-forest: #F7F9F3;
-  --color-forest-light: #EEF3E6;
-  --color-leaf: #F9AD1B;
-  --color-leaf-glow: rgba(249, 173, 27, 0.35);
-  --color-emerald: #3D9129;
-  --color-text-main: #2E3A1B;
-  --color-text-muted: #3D9129;
-  --color-border-subtle: rgba(46, 58, 27, 0.12);
+:root {
+  --cream: #FAF6EC;
+  --sand: #EFE8D8;
+  --stone: #D8CDB6;
+  --sage: #CFD8C4;
+  --forest: #243629;
+  --ink: #16130F;
+  --graphite: #5A554C;
+  --leaf: #3D9129;
+  --amber: #F9AD1B;
+  --line: #E2D9C6;
 }
 
 @layer base {
   * {
-    border-color: var(--border-subtle);
+    border-color: var(--line);
     box-sizing: border-box;
   }
   body {
-    background-color: var(--bg-deep);
-    color: var(--text-main);
-    font-family: var(--font-sans);
+    background-color: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-sans), sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
   }
   h1, h2, h3, h4, h5, h6 {
-    color: var(--text-main);
+    color: var(--ink);
     letter-spacing: -0.02em;
   }
+}
+
+/* Custom utility for serif font fallback */
+.font-serif {
+  font-family: var(--font-fraunces), Georgia, serif;
 }
