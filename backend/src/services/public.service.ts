@@ -5,6 +5,14 @@ import { toFaqDto } from '../dto/faq.dto';
 import { toTestimonialDto } from '../dto/testimonial.dto';
 import { toCaseStudyDto } from '../dto/casestudy.dto';
 import { toPostDto } from '../dto/post.dto';
+import {
+  DEFAULT_HERO_DATA,
+  DEFAULT_PROJECTS,
+  DEFAULT_SERVICES,
+  DEFAULT_MANIFESTO,
+  DEFAULT_CONTACT,
+  toProjectDto,
+} from '../dto/landing.dto';
 
 export const getLandingData = async () => {
   const [services, packages, testimonials, faqs] = await Promise.all([
@@ -17,13 +25,30 @@ export const getLandingData = async () => {
   const caseStudies = await prisma.caseStudy.findMany({
     where: { isPublished: true },
     orderBy: [{ sortOrder: 'asc' }, { publishedAt: 'desc' }],
-    take: 3,
+    take: 6,
   });
 
+  // Map services into the new 2x2 grid structure (fallback to defaults if empty)
+  const mappedServices =
+    services.length > 0
+      ? services.map((svc, idx) => toServiceDto(svc, idx))
+      : DEFAULT_SERVICES;
+
+  // Map case studies into project items (fallback to defaults if empty)
+  const mappedProjects =
+    caseStudies.length > 0
+      ? caseStudies.map((cs, idx) => toProjectDto(cs, idx))
+      : DEFAULT_PROJECTS;
+
   return {
-    services: services.map(toServiceDto),
-    packages: packages.map(toPackageDto),
+    hero: DEFAULT_HERO_DATA,
+    projects: mappedProjects,
+    services: mappedServices,
+    manifesto: DEFAULT_MANIFESTO,
+    contact: DEFAULT_CONTACT,
+    // Preserved for backwards compatibility with other consumers
     caseStudies: caseStudies.map(toCaseStudyDto),
+    packages: packages.map(toPackageDto),
     testimonials: testimonials.map(toTestimonialDto),
     faqs: faqs.map(toFaqDto),
     generatedAt: new Date().toISOString(),
@@ -37,7 +62,7 @@ export const listPackages = async () => {
 
 export const listServices = async () => {
   const svcs = await prisma.service.findMany({ where: { isActive: true }, orderBy: { sortOrder: 'asc' } });
-  return svcs.map(toServiceDto);
+  return svcs.map((svc, idx) => toServiceDto(svc, idx));
 };
 
 export const listFaqs = async () => {

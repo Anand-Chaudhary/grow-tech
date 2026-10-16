@@ -1,15 +1,11 @@
 "use client";
 
 import React from "react";
+import { ServiceGridItem } from "@/lib/api";
 
-export interface ServiceGridItem {
-  number: string;
-  title: string;
-  description: string;
-  details: string[];
-}
+export type { ServiceGridItem };
 
-const SERVICES: ServiceGridItem[] = [
+const DEFAULT_SERVICES: ServiceGridItem[] = [
   {
     number: "1",
     title: "Website design",
@@ -40,20 +36,30 @@ const SERVICES: ServiceGridItem[] = [
   },
 ];
 
-export const WhatWeDo: React.FC = () => {
+interface WhatWeDoProps {
+  services?: ServiceGridItem[];
+  heading?: string;
+}
+
+export const WhatWeDo: React.FC<WhatWeDoProps> = ({
+  services,
+  heading = "What we do.",
+}) => {
+  const displayServices = services && services.length > 0 ? services : DEFAULT_SERVICES;
+
   return (
     <section id="services" className="w-full py-16 sm:py-24 border-t border-[#E2D9C6]/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Heading */}
         <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-[#16130F] font-normal tracking-[-0.02em] mb-12 sm:mb-16">
-          What we do.
+          {heading}
         </h2>
 
         {/* 2x2 Grid with hairline borders matching screenshot */}
         <div className="grid grid-cols-1 md:grid-cols-2 border border-[#E2D9C6] rounded-xl overflow-hidden bg-white/40">
-          {SERVICES.map((item, idx) => (
+          {displayServices.map((item, idx) => (
             <div
-              key={item.number}
+              key={item.id || item.number || idx}
               className={`p-8 sm:p-12 flex flex-col justify-between transition-colors duration-200 hover:bg-white/80 ${
                 idx % 2 === 0 ? "md:border-r border-[#E2D9C6]" : ""
               } ${idx < 2 ? "border-b border-[#E2D9C6]" : ""}`}
@@ -76,16 +82,18 @@ export const WhatWeDo: React.FC = () => {
               </div>
 
               {/* Service tags / micro-details */}
-              <div className="mt-8 pt-4 border-t border-[#E2D9C6]/40 flex flex-wrap gap-2">
-                {item.details.map((detail) => (
-                  <span
-                    key={detail}
-                    className="text-[11px] font-mono text-[#243629]/75 bg-[#EFE8D8]/50 px-2.5 py-0.5 rounded-full"
-                  >
-                    {detail}
-                  </span>
-                ))}
-              </div>
+              {item.details && item.details.length > 0 && (
+                <div className="mt-8 pt-4 border-t border-[#E2D9C6]/40 flex flex-wrap gap-2">
+                  {item.details.map((detail) => (
+                    <span
+                      key={detail}
+                      className="text-[11px] font-mono text-[#243629]/75 bg-[#EFE8D8]/50 px-2.5 py-0.5 rounded-full"
+                    >
+                      {detail}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>

@@ -2,27 +2,19 @@
 
 import React from "react";
 import { ArrowUpRight } from "lucide-react";
+import { ProjectItem } from "@/lib/api";
 
-export interface ProjectItem {
-  id: string;
-  number: string;
-  category: string;
-  title: string;
-  description: string;
-  tags: string[];
-  client: string;
-  metrics: string;
-  accentBg: string;
-}
+export type { ProjectItem };
 
-const PROJECTS: ProjectItem[] = [
+const DEFAULT_PROJECTS: ProjectItem[] = [
   {
     id: "project-1",
     number: "01",
     category: "WEBSITE DEVELOPMENT",
     title: "Project 1",
     client: "Aethel BioTech",
-    description: "High-performance digital presence and product catalogue with sub-second loading and custom editorial layout.",
+    description:
+      "High-performance digital presence and product catalogue with sub-second loading and custom editorial layout.",
     tags: ["Next.js", "Tailwind CSS", "TypeScript", "CMS Integration"],
     metrics: "100/100 Lighthouse · 0.5s LCP",
     accentBg: "#243629",
@@ -33,32 +25,45 @@ const PROJECTS: ProjectItem[] = [
     category: "WEBSITE DEVELOPMENT",
     title: "Project 2",
     client: "Komorebi Design Lab",
-    description: "Architectural portfolio and client onboarding portal featuring fluid animations and headless commerce checkouts.",
+    description:
+      "Architectural portfolio and client onboarding portal featuring fluid animations and headless commerce checkouts.",
     tags: ["React 19", "Framer Motion", "Stripe API", "Cloudflare Edge"],
     metrics: "+42% Enquiries · 99.99% Uptime",
     accentBg: "#1F2E22",
   },
 ];
 
-export const ProjectsInMotion: React.FC = () => {
+interface ProjectsInMotionProps {
+  projects?: ProjectItem[];
+  badge?: string;
+  heading?: string;
+}
+
+export const ProjectsInMotion: React.FC<ProjectsInMotionProps> = ({
+  projects,
+  badge = "Oct 2024",
+  heading = "Projects in motion.",
+}) => {
+  const displayProjects = projects && projects.length > 0 ? projects : DEFAULT_PROJECTS;
+
   return (
     <section id="portfolio" className="w-full py-16 sm:py-24 border-t border-[#E2D9C6]/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mb-10 sm:mb-16">
           <span className="text-xs font-mono uppercase tracking-[0.15em] text-[#5A554C] block mb-2 font-medium">
-            Oct 2024
+            {badge}
           </span>
           <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-[#16130F] font-normal tracking-[-0.02em]">
-            Projects in motion.
+            {heading}
           </h2>
         </div>
 
         {/* Project Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-start">
-          {PROJECTS.map((project, idx) => (
+          {displayProjects.map((project, idx) => (
             <div
-              key={project.id}
+              key={project.id || idx}
               className={`group flex flex-col rounded-2xl overflow-hidden transition-transform duration-300 hover:-translate-y-1 ${
                 idx === 1 ? "md:mt-12" : ""
               }`}
@@ -66,7 +71,7 @@ export const ProjectsInMotion: React.FC = () => {
               {/* Upper Section: Olive Green Mockup Canvas */}
               <div
                 className="w-full aspect-[4/3] sm:aspect-[1.15/1] p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden"
-                style={{ backgroundColor: project.accentBg }}
+                style={{ backgroundColor: project.accentBg || "#243629" }}
               >
                 {/* Subtle ambient gradient & decorative elements */}
                 <div className="absolute inset-0 bg-radial from-white/[0.08] to-transparent pointer-events-none" />

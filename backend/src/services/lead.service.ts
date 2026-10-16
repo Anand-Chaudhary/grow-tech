@@ -7,8 +7,9 @@ const DUPLICATE_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
 export const createLead = async (data: {
   name: string;
   email: string;
-  websiteUrl?: string;
-  goal: string;
+  websiteUrl?: string | null;
+  goal?: string;
+  message?: string;
   packageTier?: PackageTier;
   utm?: any;
 }) => {
@@ -20,13 +21,15 @@ export const createLead = async (data: {
     throw err;
   }
 
+  const finalGoal = data.goal || data.message || 'General project inquiry';
+
   const lead = await prisma.lead.create({
     data: {
       name: data.name,
       email: data.email,
-      websiteUrl: data.websiteUrl,
-      goal: data.goal,
-      packageTier: data.packageTier,
+      websiteUrl: data.websiteUrl || undefined,
+      goal: finalGoal,
+      packageTier: data.packageTier || 'NOT_SURE',
       utm: data.utm,
     },
   });

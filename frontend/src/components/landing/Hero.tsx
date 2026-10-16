@@ -3,27 +3,54 @@
 import React from "react";
 import Link from "next/link";
 import { CurvedMarquee } from "./CurvedMarquee";
-import { ArrowRight } from "lucide-react";
+import { HeroData } from "@/lib/api";
 
-export const Hero: React.FC = () => {
+interface HeroProps {
+  hero?: HeroData;
+}
+
+export const Hero: React.FC<HeroProps> = ({ hero }) => {
+  const headline = hero?.headline || "Websites and apps that are built to grow with your business.";
+  const highlightWord = hero?.highlightWord || "built to grow";
+
+  const social = hero?.indicators?.social || {
+    label: "Social",
+    description: "Connected experiences that resonate across social channels and convert.",
+  };
+
+  const scale = hero?.indicators?.scale || {
+    label: "Scale",
+    description:
+      "Omnis enim voluptatem, omnis voluptas assumenda est omnis dolor repellendus temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe.",
+  };
+
+  const launch = hero?.indicators?.launch || {
+    label: "Launch",
+    description: "Rapid zero-friction deployment with guaranteed sub-second delivery.",
+  };
+
   return (
     <section id="hero" className="w-full pt-8 sm:pt-14 pb-16 sm:pb-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
         {/* Main Hero Headline matching the design exactly */}
         <h1 className="font-serif text-[42px] sm:text-[62px] md:text-[76px] lg:text-[86px] leading-[1.08] tracking-[-0.03em] text-[#16130F] max-w-4xl mx-auto mb-6 sm:mb-10 font-normal">
-          Websites and apps <br className="hidden sm:inline" />
-          that are{" "}
-          <span className="text-[#3D9129] font-normal inline-block">
-            built to grow
-          </span>{" "}
-          with your <br className="hidden sm:inline" />
-          business.
+          {headline.includes(highlightWord) ? (
+            <>
+              {headline.split(highlightWord)[0]}
+              <span className="text-[#3D9129] font-normal inline-block">
+                {highlightWord}
+              </span>
+              {headline.split(highlightWord)[1]}
+            </>
+          ) : (
+            headline
+          )}
         </h1>
       </div>
 
       {/* 3D-ish Curve Marquee Section (Moving end-to-end as requested) */}
       <div className="w-full my-2 sm:my-4">
-        <CurvedMarquee />
+        <CurvedMarquee cards={hero?.marqueeCards} />
       </div>
 
       {/* Bottom Features & Action Row matching the screenshot */}
@@ -34,11 +61,11 @@ export const Hero: React.FC = () => {
             <div className="flex items-center gap-3">
               <span className="w-3.5 h-3.5 rounded-full bg-[#243629] inline-block shadow-sm" />
               <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#243629] font-semibold">
-                Social
+                {social.label}
               </span>
             </div>
             <p className="mt-2 text-xs text-[#5A554C] leading-relaxed hidden md:block">
-              Connected experiences that resonate across social channels and convert.
+              {social.description}
             </p>
           </div>
 
@@ -47,13 +74,12 @@ export const Hero: React.FC = () => {
             <div className="flex items-center gap-3 mb-3">
               <span className="w-3.5 h-3.5 rounded-full border-[1.5px] border-[#243629] bg-transparent inline-block" />
               <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#243629] font-semibold">
-                Scale
+                {scale.label}
               </span>
             </div>
 
             <p className="text-[13.5px] sm:text-[14.5px] text-[#5A554C] leading-relaxed max-w-md mb-6 font-normal">
-              Omnis enim voluptatem, omnis voluptas assumenda est omnis dolor repellendus 
-              temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe.
+              {scale.description}
             </p>
 
             {/* Two Action Buttons matching screenshot */}
@@ -77,12 +103,12 @@ export const Hero: React.FC = () => {
           <div className="md:col-span-3 flex flex-col items-start md:items-end text-left md:text-right">
             <div className="flex items-center gap-3">
               <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#243629] font-semibold">
-                Launch
+                {launch.label}
               </span>
               <span className="w-3.5 h-3.5 rounded-full bg-[#F9AD1B] inline-block shadow-sm" />
             </div>
             <p className="mt-2 text-xs text-[#5A554C] leading-relaxed hidden md:block">
-              Rapid zero-friction deployment with guaranteed sub-second delivery.
+              {launch.description}
             </p>
           </div>
         </div>

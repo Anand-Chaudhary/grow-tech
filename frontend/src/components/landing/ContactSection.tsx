@@ -1,25 +1,53 @@
 "use client";
 
 import React, { useState } from "react";
-import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { submitLead, ContactData } from "@/lib/api";
 
-export const ContactSection: React.FC = () => {
+interface ContactSectionProps {
+  contact?: ContactData;
+}
+
+export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
   });
-  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const badge = contact?.badge || "Contact";
+  const heading = contact?.heading || "Have an idea?";
+  const highlight = contact?.highlight || "Let's build it.";
+  const subhead =
+    contact?.subhead ||
+    "Tell us about your targets, timeline, and budget. We reply within one business day with plain advice and zero sales pressure.";
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email) return;
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setStatus("error");
+      setErrorMessage("Please fill out all required fields.");
+      return;
+    }
 
     setStatus("loading");
-    setTimeout(() => {
+    setErrorMessage("");
+
+    const res = await submitLead({
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      message: formData.message.trim(),
+    });
+
+    if (res.success) {
       setStatus("success");
       setFormData({ name: "", email: "", message: "" });
-    }, 1200);
+    } else {
+      setStatus("error");
+      setErrorMessage(res.message);
+    }
   };
 
   return (
@@ -29,14 +57,14 @@ export const ContactSection: React.FC = () => {
           {/* Left Column: Heading */}
           <div className="lg:col-span-5">
             <span className="text-xs font-mono uppercase tracking-[0.16em] text-[#5A554C] block mb-3 font-medium">
-              Contact
+              {badge}
             </span>
             <h2 className="font-serif text-4xl sm:text-6xl lg:text-[68px] leading-[1.08] text-[#16130F] font-normal tracking-[-0.03em]">
-              Have an idea? <br />
-              <span className="text-[#3D9129]">Let's build it.</span>
+              {heading} <br />
+              <span className="text-[#3D9129]">{highlight}</span>
             </h2>
             <p className="mt-6 text-sm text-[#5A554C] max-w-sm leading-relaxed">
-              Tell us about your targets, timeline, and budget. We reply within one business day with plain advice and zero sales pressure.
+              {subhead}
             </p>
           </div>
 
@@ -56,13 +84,20 @@ export const ContactSection: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setStatus("idle")}
-                  className="px-6 py-2.5 rounded-full text-xs font-semibold text-[#16130F] border border-[#16130F]/40 hover:bg-white transition-colors"
+                  className="px-6 py-2.5 rounded-full text-xs font-semibold text-[#16130F] border border-[#16130F]/40 hover:bg-white transition-colors cursor-pointer"
                 >
                   Send another inquiry
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-8 sm:gap-10">
+                {status === "error" && (
+                  <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs sm:text-sm flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
+
                 {/* NAME Field */}
                 <div className="relative group">
                   <label
@@ -112,6 +147,7 @@ export const ContactSection: React.FC = () => {
                   <textarea
                     id="message"
                     rows={3}
+                    required
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     placeholder="What are you building, what is your timeframe, and what bottleneck are you solving?"

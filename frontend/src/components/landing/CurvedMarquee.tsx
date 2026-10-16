@@ -11,14 +11,32 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-interface ShowcaseCard {
+export interface ShowcaseCard {
   id: string;
   tag: string;
   title: string;
   metric?: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   variant: "analytics" | "store" | "system" | "mobile" | "editorial" | "cloud";
 }
+
+const getIconForVariant = (variant?: string) => {
+  switch (variant) {
+    case "analytics":
+      return <Zap className="w-3.5 h-3.5 text-[#3D9129]" />;
+    case "store":
+      return <TrendingUp className="w-3.5 h-3.5 text-[#F9AD1B]" />;
+    case "system":
+      return <Layers className="w-3.5 h-3.5 text-[#243629]" />;
+    case "mobile":
+      return <Smartphone className="w-3.5 h-3.5 text-[#3D9129]" />;
+    case "cloud":
+      return <Globe className="w-3.5 h-3.5 text-[#F9AD1B]" />;
+    case "editorial":
+    default:
+      return <ShieldCheck className="w-3.5 h-3.5 text-[#243629]" />;
+  }
+};
 
 const CARDS: ShowcaseCard[] = [
   {
@@ -71,10 +89,17 @@ const CARDS: ShowcaseCard[] = [
   },
 ];
 
-// Double cards list to ensure full panoramic track coverage
-const TRACK_ITEMS = [...CARDS, ...CARDS];
+interface CurvedMarqueeProps {
+  cards?: ShowcaseCard[];
+}
 
-export const CurvedMarquee: React.FC = () => {
+export const CurvedMarquee: React.FC<CurvedMarqueeProps> = ({ cards }) => {
+  const activeCards = (cards && cards.length > 0 ? cards : CARDS).map((c) => ({
+    ...c,
+    icon: c.icon || getIconForVariant(c.variant),
+  }));
+  const trackItems = [...activeCards, ...activeCards];
+
   const [isPaused, setIsPaused] = useState(false);
   const isPausedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -103,7 +128,7 @@ export const CurvedMarquee: React.FC = () => {
 
       const containerWidth = container.offsetWidth || 1200;
       const halfW = containerWidth / 2;
-      const totalCards = TRACK_ITEMS.length;
+      const totalCards = trackItems.length;
       // Responsive spacing between card centers
       const cardSpacing = Math.max(containerWidth / 3.6, 290);
       const trackLength = totalCards * cardSpacing;
@@ -198,7 +223,7 @@ export const CurvedMarquee: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-[#DCD7CB]/85 via-[#EDE9DD]/45 to-[#DCD7CB]/85 pointer-events-none" />
 
           {/* Cards positioned along the 3D circular cylinder arc */}
-          {TRACK_ITEMS.map((card, idx) => (
+          {trackItems.map((card, idx) => (
             <div
               key={`${card.id}-${idx}`}
               ref={(el) => {
