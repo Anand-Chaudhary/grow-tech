@@ -37,12 +37,29 @@ export interface HeroData {
   headline?: string;
   highlightWord?: string;
   subhead?: string;
+  actions?: {
+    primary?: string;
+    secondary?: string;
+  };
   indicators?: {
     social?: IndicatorItem;
     scale?: IndicatorItem;
     launch?: IndicatorItem;
   };
   marqueeCards?: ShowcaseCard[];
+}
+
+export interface ProjectsSectionData {
+  badge?: string;
+  heading?: string;
+  liveCaseLabel?: string;
+  statusLabel?: string;
+  performanceLabel?: string;
+  performanceScore?: string;
+}
+
+export interface ServicesSectionData {
+  heading?: string;
 }
 
 export interface ManifestoData {
@@ -56,14 +73,46 @@ export interface ContactData {
   heading?: string;
   highlight?: string;
   subhead?: string;
+  nameLabel?: string;
+  namePlaceholder?: string;
+  emailLabel?: string;
+  emailPlaceholder?: string;
+  messageLabel?: string;
+  messagePlaceholder?: string;
+  submitLabel?: string;
+  submittingLabel?: string;
+  requiredFieldsMessage?: string;
+  successHeading?: string;
+  successMessage?: string;
+  newInquiryLabel?: string;
+}
+
+export interface NavigationData {
+  home?: string;
+  about?: string;
+  services?: string;
+  portfolio?: string;
+  clients?: string;
+  contact?: string;
+  action?: string;
+}
+
+export interface FooterData {
+  backToTop?: string;
+  tagline?: string;
+  valueProps?: string[];
 }
 
 export interface LandingPageData {
   hero?: HeroData;
+  navigation?: NavigationData;
+  projectsSection?: ProjectsSectionData;
   projects?: ProjectItem[];
+  servicesSection?: ServicesSectionData;
   services?: ServiceGridItem[];
   manifesto?: ManifestoData;
   contact?: ContactData;
+  footer?: FooterData;
   caseStudies?: any[];
   packages?: any[];
   testimonials?: any[];
@@ -175,7 +224,6 @@ export async function getLandingData(): Promise<LandingPageData | null> {
     return null;
   }
 }
-
 /**
  * Submit inquiry lead form to backend using Axios
  */
@@ -207,11 +255,20 @@ export async function submitLead(
       message: serverMessage || error?.message || 'Network error occurred. Please try again.',
     };
   }
+  }
+/**
+ * Update landing page structured data via backend (admin UI).
+ */
+export async function updateLandingData(data: LandingPageData): Promise<{ success: boolean; message: string }> {
+  try {
+    const response = await apiClient.put<ApiResponse<any>>('/api/landing', data);
+    return { success: true, message: response.data?.message || 'Landing data updated' };
+  } catch (error: any) {
+    const serverMessage = error?.response?.data?.message;
+    return { success: false, message: serverMessage || error?.message || 'Failed to update landing data.' };
+  }
 }
 
-/**
- * Admin Authentication: Login
- */
 export async function loginAdmin(
   payload: LoginPayload
 ): Promise<{ success: boolean; message: string; user?: AdminUser }> {
@@ -246,7 +303,6 @@ export async function loginAdmin(
     };
   }
 }
-
 /**
  * Admin Authentication: Logout
  */
@@ -260,7 +316,6 @@ export async function logoutAdmin(): Promise<{ success: boolean; message: string
   }
   return { success: true, message: 'Logged out successfully' };
 }
-
 /**
  * Admin Authentication: Get current admin profile
  */

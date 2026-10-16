@@ -38,12 +38,39 @@ export interface HeroSectionData {
   headline: string;
   highlightWord: string;
   subhead: string;
+  actions?: {
+    primary?: string;
+    secondary?: string;
+  };
   indicators: {
     social: IndicatorItem;
     scale: IndicatorItem;
     launch: IndicatorItem;
   };
   marqueeCards: ShowcaseCard[];
+}
+
+export interface NavigationSectionData {
+  home?: string;
+  about?: string;
+  services?: string;
+  portfolio?: string;
+  clients?: string;
+  contact?: string;
+  action?: string;
+}
+
+export interface ProjectsSectionData {
+  badge?: string;
+  heading?: string;
+  liveCaseLabel?: string;
+  statusLabel?: string;
+  performanceLabel?: string;
+  performanceScore?: string;
+}
+
+export interface ServicesSectionData {
+  heading?: string;
 }
 
 export interface ManifestoSectionData {
@@ -57,14 +84,36 @@ export interface ContactSectionData {
   heading: string;
   highlight: string;
   subhead: string;
+  nameLabel?: string;
+  namePlaceholder?: string;
+  emailLabel?: string;
+  emailPlaceholder?: string;
+  messageLabel?: string;
+  messagePlaceholder?: string;
+  submitLabel?: string;
+  submittingLabel?: string;
+  requiredFieldsMessage?: string;
+  successHeading?: string;
+  successMessage?: string;
+  newInquiryLabel?: string;
+}
+
+export interface FooterSectionData {
+  backToTop?: string;
+  tagline?: string;
+  valueProps?: string[];
 }
 
 export interface LandingResponseData {
   hero: HeroSectionData;
+  navigation?: NavigationSectionData;
+  projectsSection?: ProjectsSectionData;
   projects: ProjectItem[];
+  servicesSection?: ServicesSectionData;
   services: ServiceGridItem[];
   manifesto: ManifestoSectionData;
   contact: ContactSectionData;
+  footer?: FooterSectionData;
   caseStudies: any[];
   packages: any[];
   testimonials: any[];

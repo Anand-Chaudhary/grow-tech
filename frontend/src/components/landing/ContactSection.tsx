@@ -23,12 +23,29 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
   const subhead =
     contact?.subhead ||
     "Tell us about your targets, timeline, and budget. We reply within one business day with plain advice and zero sales pressure.";
+  const nameLabel = contact?.nameLabel || "Name";
+  const namePlaceholder = contact?.namePlaceholder || "Jane Doe";
+  const emailLabel = contact?.emailLabel || "Email";
+  const emailPlaceholder = contact?.emailPlaceholder || "jane@company.com";
+  const messageLabel = contact?.messageLabel || "Tell us about the project";
+  const messagePlaceholder =
+    contact?.messagePlaceholder ||
+    "What are you building, what is your timeframe, and what bottleneck are you solving?";
+  const submitLabel = contact?.submitLabel || "Send Inquiry";
+  const submittingLabel = contact?.submittingLabel || "Sending...";
+  const requiredFieldsMessage =
+    contact?.requiredFieldsMessage || "Please fill out all required fields.";
+  const successHeading = contact?.successHeading || "Inquiry received.";
+  const successMessage =
+    contact?.successMessage ||
+    "Thank you for reaching out. We will review your project details and get back to you within 24 hours.";
+  const newInquiryLabel = contact?.newInquiryLabel || "Send another inquiry";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
       setStatus("error");
-      setErrorMessage("Please fill out all required fields.");
+    setErrorMessage(requiredFieldsMessage);
       return;
     }
 
@@ -76,17 +93,17 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <h3 className="font-serif text-2xl text-[#16130F] mb-2">
-                  Inquiry received.
+                  {successHeading}
                 </h3>
                 <p className="text-sm text-[#5A554C] max-w-md mx-auto mb-6">
-                  Thank you for reaching out. We will review your project details and get back to you within 24 hours.
+                  {successMessage}
                 </p>
                 <button
                   type="button"
                   onClick={() => setStatus("idle")}
                   className="px-6 py-2.5 rounded-full text-xs font-semibold text-[#16130F] border border-[#16130F]/40 hover:bg-white transition-colors cursor-pointer"
                 >
-                  Send another inquiry
+                  {newInquiryLabel}
                 </button>
               </div>
             ) : (
@@ -104,7 +121,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
                     htmlFor="name"
                     className="block text-[11px] font-mono tracking-[0.12em] uppercase text-[#5A554C] mb-1 font-semibold group-focus-within:text-[#243629]"
                   >
-                    Name
+                    {nameLabel}
                   </label>
                   <input
                     id="name"
@@ -112,7 +129,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Jane Doe"
+                    placeholder={namePlaceholder}
                     className="w-full py-3 bg-transparent border-b border-[#243629]/30 focus:border-[#243629] text-[15px] sm:text-base text-[#16130F] placeholder:text-stone-400 outline-none transition-colors"
                   />
                 </div>
@@ -123,7 +140,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
                     htmlFor="email"
                     className="block text-[11px] font-mono tracking-[0.12em] uppercase text-[#5A554C] mb-1 font-semibold group-focus-within:text-[#243629]"
                   >
-                    Email
+                    {emailLabel}
                   </label>
                   <input
                     id="email"
@@ -131,7 +148,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="jane@company.com"
+                    placeholder={emailPlaceholder}
                     className="w-full py-3 bg-transparent border-b border-[#243629]/30 focus:border-[#243629] text-[15px] sm:text-base text-[#16130F] placeholder:text-stone-400 outline-none transition-colors"
                   />
                 </div>
@@ -142,7 +159,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
                     htmlFor="message"
                     className="block text-[11px] font-mono tracking-[0.12em] uppercase text-[#5A554C] mb-1 font-semibold group-focus-within:text-[#243629]"
                   >
-                    Tell us about the project
+                    {messageLabel}
                   </label>
                   <textarea
                     id="message"
@@ -150,7 +167,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
                     required
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="What are you building, what is your timeframe, and what bottleneck are you solving?"
+                    placeholder={messagePlaceholder}
                     className="w-full py-3 bg-transparent border-b border-[#243629]/30 focus:border-[#243629] text-[15px] sm:text-base text-[#16130F] placeholder:text-stone-400 outline-none resize-none transition-colors"
                   />
                 </div>
@@ -165,11 +182,11 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
                     {status === "loading" ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Sending...</span>
+                        <span>{submittingLabel}</span>
                       </>
                     ) : (
                       <>
-                        <span>Send Inquiry</span>
+                        <span>{submitLabel}</span>
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}

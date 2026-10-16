@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ArrowUpRight } from "lucide-react";
-import { ProjectItem } from "@/lib/api";
+import { ProjectItem, ProjectsSectionData } from "@/lib/api";
 
 export type { ProjectItem };
 
@@ -35,16 +35,16 @@ const DEFAULT_PROJECTS: ProjectItem[] = [
 
 interface ProjectsInMotionProps {
   projects?: ProjectItem[];
-  badge?: string;
-  heading?: string;
+  section?: ProjectsSectionData;
 }
 
 export const ProjectsInMotion: React.FC<ProjectsInMotionProps> = ({
   projects,
-  badge = "Oct 2024",
-  heading = "Projects in motion.",
+  section,
 }) => {
   const displayProjects = projects && projects.length > 0 ? projects : DEFAULT_PROJECTS;
+  const badge = section?.badge || "Oct 2024";
+  const heading = section?.heading || "Projects in motion.";
 
   return (
     <section id="portfolio" className="w-full py-16 sm:py-24 border-t border-[#E2D9C6]/60">
@@ -92,10 +92,10 @@ export const ProjectsInMotion: React.FC<ProjectsInMotionProps> = ({
                 <div className="my-auto z-10 w-full max-w-sm mx-auto bg-black/25 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-5 shadow-2xl transition-transform duration-500 group-hover:scale-[1.02]">
                   <div className="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
                     <span className="text-xs font-mono text-[#F9AD1B]">
-                      {project.number} / LIVE CASE
+                      {project.number} / {section?.liveCaseLabel || "LIVE CASE"}
                     </span>
                     <span className="text-[11px] text-emerald-400 font-semibold bg-emerald-950/60 px-2 py-0.5 rounded-full">
-                      Production
+                      {section?.statusLabel || "Production"}
                     </span>
                   </div>
                   <div className="space-y-2">
@@ -104,8 +104,10 @@ export const ProjectsInMotion: React.FC<ProjectsInMotionProps> = ({
                     <div className="h-2 bg-white/10 rounded w-4/5" />
                   </div>
                   <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-white/70">
-                    <span>Performance Budget</span>
-                    <span className="text-emerald-400 font-mono font-bold">100/100</span>
+                    <span>{section?.performanceLabel || "Performance Budget"}</span>
+                    <span className="text-emerald-400 font-mono font-bold">
+                      {section?.performanceScore || "100/100"}
+                    </span>
                   </div>
                 </div>
 

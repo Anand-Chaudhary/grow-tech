@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ServiceGridItem } from "@/lib/api";
+import { ServiceGridItem, ServicesSectionData } from "@/lib/api";
 
 export type { ServiceGridItem };
 
@@ -38,14 +38,15 @@ const DEFAULT_SERVICES: ServiceGridItem[] = [
 
 interface WhatWeDoProps {
   services?: ServiceGridItem[];
-  heading?: string;
+  section?: ServicesSectionData;
 }
 
 export const WhatWeDo: React.FC<WhatWeDoProps> = ({
   services,
-  heading = "What we do.",
+  section,
 }) => {
   const displayServices = services && services.length > 0 ? services : DEFAULT_SERVICES;
+  const heading = section?.heading || "What we do.";
 
   return (
     <section id="services" className="w-full py-16 sm:py-24 border-t border-[#E2D9C6]/60">

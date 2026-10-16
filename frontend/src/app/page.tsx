@@ -36,16 +36,22 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col bg-[#FAF6EC] selection:bg-[#3D9129]/20 selection:text-[#243629]">
       {/* Floating Pill Header with top social bar */}
-      <Navbar />
+      <Navbar navigation={landingData?.navigation} />
 
       {/* Hero with iconic 3D curve marquee and 3-column action footer */}
       <Hero hero={landingData?.hero} />
 
       {/* Projects in motion section with olive mockups and cream banners */}
-      <ProjectsInMotion projects={landingData?.projects} />
+      <ProjectsInMotion
+        projects={landingData?.projects}
+        section={landingData?.projectsSection}
+      />
 
       {/* What we do 2x2 grid with green numerals */}
-      <WhatWeDo services={landingData?.services} />
+      <WhatWeDo
+        services={landingData?.services}
+        section={landingData?.servicesSection}
+      />
 
       {/* Design and tech manifesto statement */}
       <Manifesto manifesto={landingData?.manifesto} />
@@ -54,7 +60,7 @@ export default function Home() {
       <ContactSection contact={landingData?.contact} />
 
       {/* Clean footer with Grow Tech logo */}
-      <Footer />
+      <Footer footer={landingData?.footer} navigation={landingData?.navigation} />
     </main>
   );
 }

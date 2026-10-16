@@ -1,7 +1,19 @@
 import { Router, Request, Response } from 'express';
 import * as publicService from '../services/public.service';
+import * as landingService from '../services/landing.service';
 
 const router = Router();
+
+router.put('/landing', async (req: Request, res: Response) => {
+  const data = req.body;
+  try {
+    await landingService.saveLandingOverrides(data);
+    return res.success({ success: true, message: 'Landing data saved', status: 200, data });
+  } catch (err) {
+    console.warn('[Landing API] Error saving data:', err);
+    return res.status(500).json({ success: false, message: 'Failed to save landing data', status: 500, data: null });
+  }
+});
 
 router.get('/landing', async (_req: Request, res: Response) => {
   const data = await publicService.getLandingData();

@@ -46,6 +46,11 @@ export const Hero: React.FC<HeroProps> = ({ hero }) => {
             headline
           )}
         </h1>
+        {hero?.subhead && (
+          <p className="max-w-2xl mx-auto -mt-4 mb-6 sm:mb-8 text-sm sm:text-base leading-relaxed text-[#5A554C]">
+            {hero.subhead}
+          </p>
+        )}
       </div>
 
       {/* 3D-ish Curve Marquee Section (Moving end-to-end as requested) */}
@@ -88,13 +93,13 @@ export const Hero: React.FC<HeroProps> = ({ hero }) => {
                 href="#contact"
                 className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold text-white bg-[#243629] hover:bg-[#1a281e] active:scale-95 transition-all shadow-sm"
               >
-                Start a project
+                {hero?.actions?.primary || "Start a project"}
               </Link>
               <Link
                 href="#portfolio"
                 className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold text-[#16130F] bg-transparent border border-[#16130F]/80 hover:bg-[#EFE8D8]/70 active:scale-95 transition-all"
               >
-                Explore our work
+                {hero?.actions?.secondary || "Explore our work"}
               </Link>
             </div>
           </div>

@@ -4,24 +4,35 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
+import { NavigationData } from "@/lib/api";
 import logo from '@/assets/logo.svg'
 
 export interface NavItem {
   label: string;
   href: string;
+  key: keyof NavigationData;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Home", href: "#hero" },
-  { label: "About", href: "#about" },
-  { label: "Services", href: "#services" },
-  { label: "Portfolio", href: "#portfolio" },
-  { label: "Clients", href: "#clients" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", href: "#hero", key: "home" },
+  { label: "About", href: "#about", key: "about" },
+  { label: "Services", href: "#services", key: "services" },
+  { label: "Portfolio", href: "#portfolio", key: "portfolio" },
+  { label: "Clients", href: "#clients", key: "clients" },
+  { label: "Contact", href: "#contact", key: "contact" },
 ];
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  navigation?: NavigationData;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ navigation }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navItems = NAV_ITEMS.map((item) => ({
+    ...item,
+    label: navigation?.[item.key] || item.label,
+  }));
+  const actionLabel = navigation?.action || "Start a project";
 
   return (
     <header className="w-full pt-4 pb-2 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col items-center">
@@ -92,7 +103,7 @@ export const Navbar: React.FC = () => {
 
         {/* Desktop Navigation Links */}
         <div className="hidden md:flex items-center gap-6 lg:gap-7 text-[14px] font-medium text-[#2E3A1B]/80">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
@@ -109,7 +120,7 @@ export const Navbar: React.FC = () => {
             href="#contact"
             className="inline-flex items-center justify-center px-5 py-2 rounded-full text-[13.5px] font-semibold text-white bg-[#F9AD1B] hover:bg-[#e0980f] active:scale-95 transition-all shadow-[0_2px_10px_rgba(249,173,27,0.25)] hover:shadow-[0_4px_14px_rgba(249,173,27,0.35)]"
           >
-            Start a project
+            {actionLabel}
           </Link>
         </div>
 
@@ -119,7 +130,7 @@ export const Navbar: React.FC = () => {
             href="#contact"
             className="inline-flex sm:hidden items-center px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-[#F9AD1B]"
           >
-            Start
+            {actionLabel}
           </Link>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -134,7 +145,7 @@ export const Navbar: React.FC = () => {
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="w-full max-w-md mt-2 bg-white/95 backdrop-blur-lg border border-[#E2D9C6] rounded-2xl p-5 shadow-xl md:hidden flex flex-col gap-3 animate-in fade-in slide-in-from-top-2 duration-200 z-40">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
@@ -150,7 +161,7 @@ export const Navbar: React.FC = () => {
               onClick={() => setMobileMenuOpen(false)}
               className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white bg-[#F9AD1B] hover:bg-[#e0980f] transition-all"
             >
-              <span>Start a project</span>
+              <span>{actionLabel}</span>
               <ArrowUpRight className="w-4 h-4" />
             </Link>
           </div>

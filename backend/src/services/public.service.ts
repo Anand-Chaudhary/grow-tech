@@ -14,6 +14,8 @@ import {
   toProjectDto,
 } from '../dto/landing.dto';
 
+import * as landingService from './landing.service';
+
 export const getLandingData = async () => {
   const [services, packages, testimonials, faqs] = await Promise.all([
     prisma.service.findMany({ where: { isActive: true }, orderBy: { sortOrder: 'asc' } }),
@@ -40,12 +42,19 @@ export const getLandingData = async () => {
       ? caseStudies.map((cs, idx) => toProjectDto(cs, idx))
       : DEFAULT_PROJECTS;
 
+  // Load any custom overrides saved via the admin UI. These may contain partial fields such as hero, manifesto, or contact.
+  const overrides = await landingService.loadLandingOverrides();
+
   return {
-    hero: DEFAULT_HERO_DATA,
-    projects: mappedProjects,
-    services: mappedServices,
-    manifesto: DEFAULT_MANIFESTO,
-    contact: DEFAULT_CONTACT,
+    hero: overrides.hero ?? DEFAULT_HERO_DATA,
+    navigation: overrides.navigation,
+    projectsSection: overrides.projectsSection,
+    projects: overrides.projects ?? mappedProjects,
+    servicesSection: overrides.servicesSection,
+    services: overrides.services ?? mappedServices,
+    manifesto: overrides.manifesto ?? DEFAULT_MANIFESTO,
+    contact: overrides.contact ?? DEFAULT_CONTACT,
+    footer: overrides.footer,
     // Preserved for backwards compatibility with other consumers
     caseStudies: caseStudies.map(toCaseStudyDto),
     packages: packages.map(toPackageDto),

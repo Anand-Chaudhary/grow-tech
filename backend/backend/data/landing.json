@@ -1,0 +1,79 @@
+{
+  "hero": {
+    "headline": "Websites and apps that are built to grow with your business.",
+    "highlightWord": "built to grow",
+    "subhead": "GrowTech is a professional web development agency who will be committed to the project you provide us with. We will treat it as our own project and not just any random client project.",
+    "indicators": {
+      "social": {
+        "label": "Social",
+        "description": "Connected experiences that resonate across social channels and convert."
+      },
+      "scale": {
+        "label": "Scale",
+        "description": "Omnis enim voluptatem, omnis voluptas assumenda est omnis dolor repellendus temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe."
+      },
+      "launch": {
+        "label": "Launch",
+        "description": "Rapid zero-friction deployment with guaranteed sub-second delivery."
+      }
+    },
+    "marqueeCards": [
+      {
+        "id": "card-1",
+        "tag": "Next.js 15",
+        "title": "High Performance Web Apps",
+        "metric": "0.6s LCP",
+        "variant": "analytics"
+      },
+      {
+        "id": "card-2",
+        "tag": "E-Commerce",
+        "title": "Headless Checkout Engine",
+        "metric": "99.98% Uptime",
+        "variant": "store"
+      },
+      {
+        "id": "card-3",
+        "tag": "Design System",
+        "title": "Scalable Component Library",
+        "metric": "100+ Tokens",
+        "variant": "system"
+      },
+      {
+        "id": "card-4",
+        "tag": "Mobile First",
+        "title": "Cross-Platform Precision",
+        "metric": "60 FPS Fluid",
+        "variant": "mobile"
+      },
+      {
+        "id": "card-5",
+        "tag": "Cloud Native",
+        "title": "Global Edge & Domain CDN",
+        "metric": "Sub-15ms TTFB",
+        "variant": "cloud"
+      },
+      {
+        "id": "card-6",
+        "tag": "SEO & Speed",
+        "title": "100/100 Lighthouse Benchmark",
+        "metric": "Rank #1 Ready",
+        "variant": "editorial"
+      }
+    ]
+  },
+  "manifesto": {
+    "heading": "We solve problems with design and technology, and stay close while it grows.",
+    "highlight": "and stay close while it grows.",
+    "paragraphs": [
+      "Full-spectrum execution from understanding whatever hurdles your digital product faces to custom design and engineering that scales effortlessly as your audience expands.",
+      "You remain completely in control throughout our discovery, architecture, and ongoing updates. Every repository, domain, and asset sits in accounts you own from day one."
+    ]
+  },
+  "contact": {
+    "badge": "Contact",
+    "heading": "Have an idea?",
+    "highlight": "Let's build it.",
+    "subhead": "Tell us about your targets, timeline, and budget. We reply within one business day with plain advice and zero sales pressure."
+  }
+}
