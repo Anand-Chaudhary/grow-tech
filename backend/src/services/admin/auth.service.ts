@@ -2,7 +2,7 @@ import prisma from '../../db/prisma';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || '';
+const JWT_SECRET = process.env.JWT_SECRET || 'growtech_jwt_secret_dev_key_2026';
 const BCRYPT_SALT_ROUNDS = 10;
 
 export const registerFirstAdmin = async (params: {

@@ -87,8 +87,55 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export interface AdminUser {
+  id: string;
+  name?: string;
+  email: string;
+  role: string;
+  token?: string;
+  isActive?: boolean;
+}
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
 export const getBaseUrl = () => {
   return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+};
+
+// Storage helper functions
+export const getAuthToken = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('growtech_auth_token');
+};
+
+export const setAuthToken = (token: string): void => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('growtech_auth_token', token);
+};
+
+export const removeAuthToken = (): void => {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem('growtech_auth_token');
+  localStorage.removeItem('growtech_admin_user');
+};
+
+export const getStoredAdmin = (): AdminUser | null => {
+  if (typeof window === 'undefined') return null;
+  const raw = localStorage.getItem('growtech_admin_user');
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+};
+
+export const setStoredAdmin = (user: AdminUser): void => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('growtech_admin_user', JSON.stringify(user));
 };
 
 export const apiClient = axios.create({
@@ -97,7 +144,17 @@ export const apiClient = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
+  withCredentials: true,
   timeout: 10000,
+});
+
+// Attach Authorization header if token exists
+apiClient.interceptors.request.use((config) => {
+  const token = getAuthToken();
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 /**
@@ -149,5 +206,73 @@ export async function submitLead(
       success: false,
       message: serverMessage || error?.message || 'Network error occurred. Please try again.',
     };
+  }
+}
+
+/**
+ * Admin Authentication: Login
+ */
+export async function loginAdmin(
+  payload: LoginPayload
+): Promise<{ success: boolean; message: string; user?: AdminUser }> {
+  try {
+    const response = await apiClient.post<ApiResponse<AdminUser>>('/api/admin/auth/login', {
+      email: payload.email,
+      password: payload.password,
+    });
+
+    if (response.data?.success && response.data?.data) {
+      const user = response.data.data;
+      if (user.token) {
+        setAuthToken(user.token);
+      }
+      setStoredAdmin(user);
+      return {
+        success: true,
+        message: response.data.message || 'Logged in successfully',
+        user,
+      };
+    }
+
+    return {
+      success: false,
+      message: response.data?.message || 'Login failed',
+    };
+  } catch (error: any) {
+    const serverMessage = error?.response?.data?.message;
+    return {
+      success: false,
+      message: serverMessage || error?.message || 'Authentication failed. Please verify credentials.',
+    };
+  }
+}
+
+/**
+ * Admin Authentication: Logout
+ */
+export async function logoutAdmin(): Promise<{ success: boolean; message: string }> {
+  try {
+    await apiClient.post('/api/admin/auth/logout');
+  } catch (err) {
+    console.warn('[GrowTech API] Error logging out:', err);
+  } finally {
+    removeAuthToken();
+  }
+  return { success: true, message: 'Logged out successfully' };
+}
+
+/**
+ * Admin Authentication: Get current admin profile
+ */
+export async function getAdminProfile(): Promise<AdminUser | null> {
+  try {
+    const response = await apiClient.get<ApiResponse<AdminUser>>('/api/admin/auth/me');
+    if (response.data?.success && response.data?.data) {
+      setStoredAdmin(response.data.data);
+      return response.data.data;
+    }
+    return null;
+  } catch {
+    return null;
   }
 }

@@ -18,10 +18,10 @@ declare global {
   }
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || '';
+const JWT_SECRET = process.env.JWT_SECRET || 'growtech_jwt_secret_dev_key_2026';
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.cookies?.auth_token;
+  const token = req.cookies?.auth_token || req.headers.authorization?.replace(/^Bearer\s+/i, '');
   if (!token) {
     return res.status(401).json({ success: false, message: 'Unauthenticated', status: 401, data: null });
   }
