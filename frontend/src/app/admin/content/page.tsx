@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   AlertCircle,
   CheckCircle,
@@ -8,21 +9,25 @@ import {
   Plus,
   Save,
   Trash2,
+  ArrowRight,
+  Layers,
+  Briefcase,
+  DollarSign,
+  FileText,
+  Sparkles,
 } from "lucide-react";
 import {
   getLandingData,
   updateLandingData,
   LandingPageData,
-  ProjectItem,
-  ServiceGridItem,
   ShowcaseCard,
 } from "@/lib/api";
+
+import { TextField, SectionCard } from "./components";
 
 type EditableSection =
   | "hero"
   | "navigation"
-  | "projectsSection"
-  | "servicesSection"
   | "manifesto"
   | "contact"
   | "footer";
@@ -30,72 +35,6 @@ type EditableSection =
 const fieldClass =
   "w-full p-2 bg-[#FAF6EC] border border-[#E2D9C6] rounded text-sm text-[#16130F]";
 const labelClass = "block text-xs font-mono uppercase text-[#5A554C] mb-1";
-
-interface TextFieldProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  rows?: number;
-  type?: string;
-}
-
-function TextField({ label, value, onChange, rows, type = "text" }: TextFieldProps) {
-  return (
-    <label className="block">
-      <span className={labelClass}>{label}</span>
-      {rows ? (
-        <textarea
-          rows={rows}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className={fieldClass}
-        />
-      ) : (
-        <input
-          type={type}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className={fieldClass}
-        />
-      )}
-    </label>
-  );
-}
-
-function SectionCard({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="space-y-4 rounded-2xl border border-[#E2D9C6] bg-white/50 p-5 sm:p-6">
-      <h2 className="text-xl font-medium text-[#16130F]">{title}</h2>
-      {children}
-    </section>
-  );
-}
-
-const emptyProject = (index: number): ProjectItem => ({
-  id: `project-${Date.now()}-${index}`,
-  number: String(index + 1).padStart(2, "0"),
-  category: "",
-  title: "",
-  description: "",
-  tags: [],
-  client: "",
-  metrics: "",
-  accentBg: "#243629",
-});
-
-const emptyService = (index: number): ServiceGridItem => ({
-  id: `service-${Date.now()}-${index}`,
-  number: String(index + 1),
-  title: "",
-  description: "",
-  details: [],
-});
 
 const emptyShowcaseCard = (index: number): ShowcaseCard => ({
   id: `card-${Date.now()}-${index}`,
@@ -136,22 +75,15 @@ export default function LandingContentEditor() {
             contact: data.navigation?.contact || "Contact",
             action: data.navigation?.action || "Start a project",
           },
-          projectsSection: {
-            badge: data.projectsSection?.badge || "Oct 2024",
-            heading: data.projectsSection?.heading || "Projects in motion.",
-            liveCaseLabel: data.projectsSection?.liveCaseLabel || "LIVE CASE",
-            statusLabel: data.projectsSection?.statusLabel || "Production",
-            performanceLabel: data.projectsSection?.performanceLabel || "Performance Budget",
-            performanceScore: data.projectsSection?.performanceScore || "100/100",
-          },
-          projects: data.projects,
-          servicesSection: {
-            heading: data.servicesSection?.heading || "What we do.",
-          },
-          services: data.services,
           manifesto: data.manifesto,
           contact: {
             ...data.contact,
+            badge: data.contact?.badge || "Contact",
+            heading: data.contact?.heading || "Have an idea?",
+            highlight: data.contact?.highlight || "Let's build it.",
+            subhead:
+              data.contact?.subhead ||
+              "Tell us about your targets, timeline, and budget. We reply within one business day with plain advice and zero sales pressure.",
             nameLabel: data.contact?.nameLabel || "Name",
             namePlaceholder: data.contact?.namePlaceholder || "Jane Doe",
             emailLabel: data.contact?.emailLabel || "Email",
@@ -194,7 +126,7 @@ export default function LandingContentEditor() {
 
   const updateSection = <K extends EditableSection>(
     section: K,
-    payload: Partial<NonNullable<LandingPageData[K]>>,
+    payload: Partial<NonNullable<LandingPageData[K]>>
   ) => {
     setForm((previous) => ({
       ...previous,
@@ -203,81 +135,18 @@ export default function LandingContentEditor() {
     setSuccess(null);
   };
 
-  const updateProject = (
-    index: number,
-    field: Exclude<keyof ProjectItem, "tags">,
-    value: string,
-  ) => {
-    setForm((previous) => ({
-      ...previous,
-      projects: (previous.projects ?? []).map((project, currentIndex) =>
-        currentIndex === index ? { ...project, [field]: value } : project,
-      ),
-    }));
-    setSuccess(null);
-  };
-
-  const updateProjectTags = (index: number, value: string) => {
-    setForm((previous) => ({
-      ...previous,
-      projects: (previous.projects ?? []).map((project, currentIndex) =>
-        currentIndex === index
-          ? {
-              ...project,
-              tags: value
-                .split("\n")
-                .map((tag) => tag.trim())
-                .filter(Boolean),
-            }
-          : project,
-      ),
-    }));
-    setSuccess(null);
-  };
-
-  const updateService = (
-    index: number,
-    field: Exclude<keyof ServiceGridItem, "details">,
-    value: string,
-  ) => {
-    setForm((previous) => ({
-      ...previous,
-      services: (previous.services ?? []).map((service, currentIndex) =>
-        currentIndex === index ? { ...service, [field]: value } : service,
-      ),
-    }));
-    setSuccess(null);
-  };
-
-  const updateServiceDetails = (index: number, value: string) => {
-    setForm((previous) => ({
-      ...previous,
-      services: (previous.services ?? []).map((service, currentIndex) =>
-        currentIndex === index
-          ? {
-              ...service,
-              details: value
-                .split("\n")
-                .map((detail) => detail.trim())
-                .filter(Boolean),
-            }
-          : service,
-      ),
-    }));
-    setSuccess(null);
-  };
-
   const updateShowcaseCard = (
     index: number,
     field: keyof ShowcaseCard,
-    value: string,
+    value: string
   ) => {
     setForm((previous) => ({
       ...previous,
       hero: {
         ...previous.hero,
-        marqueeCards: (previous.hero?.marqueeCards ?? []).map((card, currentIndex) =>
-          currentIndex === index ? { ...card, [field]: value } : card,
+        marqueeCards: (previous.hero?.marqueeCards ?? []).map(
+          (card, currentIndex) =>
+            currentIndex === index ? { ...card, [field]: value } : card
         ),
       },
     }));
@@ -291,9 +160,9 @@ export default function LandingContentEditor() {
     const result = await updateLandingData(form);
     setSaving(false);
     if (result.success) {
-      setSuccess(result.message);
+      setSuccess("Landing page content saved successfully!");
     } else {
-      setError(result.message);
+      setError(result.message || "Failed to update landing page data.");
     }
   };
 
@@ -309,16 +178,98 @@ export default function LandingContentEditor() {
   const hero = form.hero;
   const indicators = hero?.indicators;
   const marqueeCards = hero?.marqueeCards ?? [];
-  const projects = form.projects ?? [];
-  const services = form.services ?? [];
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6">
-      <div>
-        <h1 className="text-3xl font-serif text-[#16130F]">Landing Page Content</h1>
-        <p className="mt-2 text-sm text-[#5A554C]">
-          Edit the copy, labels, and content cards displayed across the public landing page.
-        </p>
+    <div className="mx-auto max-w-4xl space-y-8 pb-16">
+      {/* Top Banner & Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#E2D9C6]/60">
+        <div>
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#3D9129]/10 text-[#243629] text-xs font-mono font-medium mb-2">
+            <FileText className="w-3.5 h-3.5 text-[#3D9129]" />
+            CORE CONTENT & SEO
+          </div>
+          <h1 className="text-3xl font-serif text-[#16130F]">Landing Page Content</h1>
+          <p className="mt-1 text-sm text-[#5A554C]">
+            Edit typography, hero showcase marquee, navigation labels, manifesto copy, and contact form wording.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={saving}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold text-white bg-[#243629] hover:bg-[#1a281e] transition-colors shadow-sm disabled:opacity-50 self-start sm:self-auto"
+        >
+          {saving ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          ) : (
+            <Save className="w-3.5 h-3.5" />
+          )}
+          <span>{saving ? "Saving..." : "Save Content"}</span>
+        </button>
+      </div>
+
+      {/* Quick Navigation Cards to Dedicated Pages */}
+      <div className="grid sm:grid-cols-3 gap-4">
+        <Link
+          href="/admin/services"
+          className="p-4 sm:p-5 rounded-2xl border border-[#E2D9C6] bg-white hover:border-[#3D9129]/60 hover:bg-[#FAF6EC]/30 transition-all flex items-center justify-between group shadow-sm"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#3D9129]/10 text-[#243629] flex items-center justify-center shrink-0">
+              <Layers className="w-4 h-4 text-[#3D9129]" />
+            </div>
+            <div>
+              <h3 className="font-serif font-medium text-sm text-[#16130F] group-hover:text-[#3D9129] transition-colors">
+                Services
+              </h3>
+              <p className="text-[11px] text-[#5A554C]">
+                Edit service cards & deliverables
+              </p>
+            </div>
+          </div>
+          <ArrowRight className="w-3.5 h-3.5 text-[#5A554C] group-hover:translate-x-1 group-hover:text-[#3D9129] transition-all shrink-0" />
+        </Link>
+
+        <Link
+          href="/admin/projects"
+          className="p-4 sm:p-5 rounded-2xl border border-[#E2D9C6] bg-white hover:border-[#3D9129]/60 hover:bg-[#FAF6EC]/30 transition-all flex items-center justify-between group shadow-sm"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#243629]/10 text-[#243629] flex items-center justify-center shrink-0">
+              <Briefcase className="w-4 h-4 text-[#243629]" />
+            </div>
+            <div>
+              <h3 className="font-serif font-medium text-sm text-[#16130F] group-hover:text-[#3D9129] transition-colors">
+                Projects
+              </h3>
+              <p className="text-[11px] text-[#5A554C]">
+                Manage case studies & metrics
+              </p>
+            </div>
+          </div>
+          <ArrowRight className="w-3.5 h-3.5 text-[#5A554C] group-hover:translate-x-1 group-hover:text-[#3D9129] transition-all shrink-0" />
+        </Link>
+
+        <Link
+          href="/admin/pricing"
+          className="p-4 sm:p-5 rounded-2xl border border-[#E2D9C6] bg-white hover:border-[#3D9129]/60 hover:bg-[#FAF6EC]/30 transition-all flex items-center justify-between group shadow-sm"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#3D9129]/10 text-[#243629] flex items-center justify-center shrink-0">
+              <DollarSign className="w-4 h-4 text-[#3D9129]" />
+            </div>
+            <div>
+              <h3 className="font-serif font-medium text-sm text-[#16130F] group-hover:text-[#3D9129] transition-colors">
+                Pricing Plans
+              </h3>
+              <p className="text-[11px] text-[#5A554C]">
+                Configure tiers, rates & highlights
+              </p>
+            </div>
+          </div>
+          <ArrowRight className="w-3.5 h-3.5 text-[#5A554C] group-hover:translate-x-1 group-hover:text-[#3D9129] transition-all shrink-0" />
+        </Link>
       </div>
 
       {error && (
@@ -335,7 +286,8 @@ export default function LandingContentEditor() {
         </div>
       )}
 
-      <SectionCard title="Navigation">
+      {/* Navigation Links */}
+      <SectionCard title="Header Navigation Links">
         <div className="grid gap-4 sm:grid-cols-2">
           {(
             [
@@ -345,7 +297,7 @@ export default function LandingContentEditor() {
               ["portfolio", "Portfolio link"],
               ["clients", "Clients link"],
               ["contact", "Contact link"],
-              ["action", "Navigation button"],
+              ["action", "Call to action button"],
             ] as const
           ).map(([key, label]) => (
             <TextField
@@ -358,15 +310,16 @@ export default function LandingContentEditor() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Hero">
+      {/* Hero Section */}
+      <SectionCard title="Hero Section">
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField
-            label="Headline"
+            label="Main Headline"
             value={hero?.headline ?? ""}
             onChange={(headline) => updateSection("hero", { headline })}
           />
           <TextField
-            label="Highlighted words"
+            label="Highlighted Words (Green)"
             value={hero?.highlightWord ?? ""}
             onChange={(highlightWord) => updateSection("hero", { highlightWord })}
           />
@@ -379,7 +332,7 @@ export default function LandingContentEditor() {
             />
           </div>
           <TextField
-            label="Primary button"
+            label="Primary Button Text"
             value={hero?.actions?.primary ?? ""}
             onChange={(primary) =>
               updateSection("hero", {
@@ -388,7 +341,7 @@ export default function LandingContentEditor() {
             }
           />
           <TextField
-            label="Secondary button"
+            label="Secondary Button Text"
             value={hero?.actions?.secondary ?? ""}
             onChange={(secondary) =>
               updateSection("hero", {
@@ -398,12 +351,12 @@ export default function LandingContentEditor() {
           />
         </div>
 
-        <h3 className="pt-3 font-medium text-[#16130F]">Hero indicators</h3>
+        <h3 className="pt-3 font-medium text-[#16130F]">Hero Indicators</h3>
         <div className="grid gap-4 md:grid-cols-3">
           {(["social", "scale", "launch"] as const).map((key) => (
-            <div key={key} className="space-y-3 rounded-xl border border-[#E2D9C6] p-4">
+            <div key={key} className="space-y-3 rounded-xl border border-[#E2D9C6] p-4 bg-[#FAF6EC]/30">
               <TextField
-                label={`${key} label`}
+                label={`${key} Label`}
                 value={indicators?.[key]?.label ?? ""}
                 onChange={(label) =>
                   updateSection("hero", {
@@ -432,7 +385,7 @@ export default function LandingContentEditor() {
         </div>
 
         <div className="flex items-center justify-between pt-3">
-          <h3 className="font-medium text-[#16130F]">Marquee cards</h3>
+          <h3 className="font-medium text-[#16130F]">Marquee Cards</h3>
           <button
             type="button"
             onClick={() =>
@@ -442,12 +395,13 @@ export default function LandingContentEditor() {
             }
             className="inline-flex items-center gap-1 text-sm font-medium text-[#243629]"
           >
-            <Plus className="h-4 w-4" /> Add card
+            <Plus className="h-4 w-4" /> Add Marquee Card
           </button>
         </div>
+
         <div className="space-y-4">
           {marqueeCards.map((card, index) => (
-            <div key={card.id} className="space-y-3 rounded-xl border border-[#E2D9C6] p-4">
+            <div key={card.id || index} className="space-y-3 rounded-xl border border-[#E2D9C6] p-4 bg-white">
               <div className="flex items-center justify-between">
                 <h4 className="font-medium text-[#16130F]">Card {index + 1}</h4>
                 <button
@@ -480,11 +434,11 @@ export default function LandingContentEditor() {
                   onChange={(value) => updateShowcaseCard(index, "metric", value)}
                 />
                 <label className="block">
-                  <span className={labelClass}>Visual style</span>
+                  <span className={labelClass}>Visual Style</span>
                   <select
                     value={card.variant}
                     onChange={(event) =>
-                      updateShowcaseCard(index, "variant", event.target.value)
+                      updateShowcaseCard(index, "variant", event.target.value as any)
                     }
                     className={fieldClass}
                   >
@@ -493,7 +447,7 @@ export default function LandingContentEditor() {
                         <option key={variant} value={variant}>
                           {variant}
                         </option>
-                      ),
+                      )
                     )}
                   </select>
                 </label>
@@ -503,197 +457,8 @@ export default function LandingContentEditor() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Projects">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <TextField
-            label="Section badge"
-            value={form.projectsSection?.badge ?? ""}
-            onChange={(badge) => updateSection("projectsSection", { badge })}
-          />
-          <TextField
-            label="Section heading"
-            value={form.projectsSection?.heading ?? ""}
-            onChange={(heading) => updateSection("projectsSection", { heading })}
-          />
-          <TextField
-            label="Case label"
-            value={form.projectsSection?.liveCaseLabel ?? ""}
-            onChange={(liveCaseLabel) =>
-              updateSection("projectsSection", { liveCaseLabel })
-            }
-          />
-          <TextField
-            label="Status label"
-            value={form.projectsSection?.statusLabel ?? ""}
-            onChange={(statusLabel) => updateSection("projectsSection", { statusLabel })}
-          />
-          <TextField
-            label="Performance label"
-            value={form.projectsSection?.performanceLabel ?? ""}
-            onChange={(performanceLabel) =>
-              updateSection("projectsSection", { performanceLabel })
-            }
-          />
-          <TextField
-            label="Performance score"
-            value={form.projectsSection?.performanceScore ?? ""}
-            onChange={(performanceScore) =>
-              updateSection("projectsSection", { performanceScore })
-            }
-          />
-        </div>
-        <div className="flex items-center justify-between pt-3">
-          <h3 className="font-medium text-[#16130F]">Project cards</h3>
-          <button
-            type="button"
-            onClick={() =>
-              setForm((previous) => ({
-                ...previous,
-                projects: [...(previous.projects ?? []), emptyProject(projects.length)],
-              }))
-            }
-            className="inline-flex items-center gap-1 text-sm font-medium text-[#243629]"
-          >
-            <Plus className="h-4 w-4" /> Add project
-          </button>
-        </div>
-        <div className="space-y-4">
-          {projects.map((project, index) => (
-            <div key={project.id} className="space-y-3 rounded-xl border border-[#E2D9C6] p-4">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium text-[#16130F]">Project {index + 1}</h4>
-                <button
-                  type="button"
-                  aria-label={`Remove project ${index + 1}`}
-                  onClick={() =>
-                    setForm((previous) => ({
-                      ...previous,
-                      projects: (previous.projects ?? []).filter(
-                        (_, projectIndex) => projectIndex !== index,
-                      ),
-                    }))
-                  }
-                  className="rounded p-1 text-red-700 hover:bg-red-50"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {(
-                  [
-                    ["number", "Number"],
-                    ["category", "Category"],
-                    ["title", "Title"],
-                    ["client", "Client"],
-                    ["metrics", "Metrics"],
-                    ["accentBg", "Card background color"],
-                  ] as const
-                ).map(([field, label]) => (
-                  <TextField
-                    key={field}
-                    label={label}
-                    value={project[field]}
-                    onChange={(value) => updateProject(index, field, value)}
-                  />
-                ))}
-                <div className="sm:col-span-2">
-                  <TextField
-                    label="Description"
-                    rows={3}
-                    value={project.description}
-                    onChange={(value) => updateProject(index, "description", value)}
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <TextField
-                    label="Tags (one per line)"
-                    rows={3}
-                    value={project.tags.join("\n")}
-                    onChange={(value) => updateProjectTags(index, value)}
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </SectionCard>
-
-      <SectionCard title="Services">
-        <TextField
-          label="Section heading"
-          value={form.servicesSection?.heading ?? ""}
-          onChange={(heading) => updateSection("servicesSection", { heading })}
-        />
-        <div className="flex items-center justify-between pt-3">
-          <h3 className="font-medium text-[#16130F]">Service cards</h3>
-          <button
-            type="button"
-            onClick={() =>
-              setForm((previous) => ({
-                ...previous,
-                services: [...(previous.services ?? []), emptyService(services.length)],
-              }))
-            }
-            className="inline-flex items-center gap-1 text-sm font-medium text-[#243629]"
-          >
-            <Plus className="h-4 w-4" /> Add service
-          </button>
-        </div>
-        <div className="space-y-4">
-          {services.map((service, index) => (
-            <div key={service.id || index} className="space-y-3 rounded-xl border border-[#E2D9C6] p-4">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium text-[#16130F]">Service {index + 1}</h4>
-                <button
-                  type="button"
-                  aria-label={`Remove service ${index + 1}`}
-                  onClick={() =>
-                    setForm((previous) => ({
-                      ...previous,
-                      services: (previous.services ?? []).filter(
-                        (_, serviceIndex) => serviceIndex !== index,
-                      ),
-                    }))
-                  }
-                  className="rounded p-1 text-red-700 hover:bg-red-50"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <TextField
-                  label="Number"
-                  value={service.number}
-                  onChange={(value) => updateService(index, "number", value)}
-                />
-                <TextField
-                  label="Title"
-                  value={service.title}
-                  onChange={(value) => updateService(index, "title", value)}
-                />
-                <div className="sm:col-span-2">
-                  <TextField
-                    label="Description"
-                    rows={3}
-                    value={service.description}
-                    onChange={(value) => updateService(index, "description", value)}
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <TextField
-                    label="Details (one per line)"
-                    rows={3}
-                    value={service.details.join("\n")}
-                    onChange={(value) => updateServiceDetails(index, value)}
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </SectionCard>
-
-      <SectionCard title="About / Manifesto">
+      {/* Manifesto / About */}
+      <SectionCard title="About & Manifesto">
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField
             label="Heading"
@@ -701,7 +466,7 @@ export default function LandingContentEditor() {
             onChange={(heading) => updateSection("manifesto", { heading })}
           />
           <TextField
-            label="Highlighted text"
+            label="Highlighted Text"
             value={form.manifesto?.highlight ?? ""}
             onChange={(highlight) => updateSection("manifesto", { highlight })}
           />
@@ -718,7 +483,8 @@ export default function LandingContentEditor() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Contact">
+      {/* Contact Section Copy */}
+      <SectionCard title="Contact Section Copy & Form Settings">
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField
             label="Badge"
@@ -731,7 +497,7 @@ export default function LandingContentEditor() {
             onChange={(heading) => updateSection("contact", { heading })}
           />
           <TextField
-            label="Highlighted text"
+            label="Highlighted Text"
             value={form.contact?.highlight ?? ""}
             onChange={(highlight) => updateSection("contact", { highlight })}
           />
@@ -743,6 +509,7 @@ export default function LandingContentEditor() {
               onChange={(subhead) => updateSection("contact", { subhead })}
             />
           </div>
+
           {(
             [
               ["nameLabel", "Name field label"],
@@ -751,12 +518,12 @@ export default function LandingContentEditor() {
               ["emailPlaceholder", "Email placeholder"],
               ["messageLabel", "Message field label"],
               ["messagePlaceholder", "Message placeholder"],
-              ["submitLabel", "Submit button"],
-              ["submittingLabel", "Submitting button"],
-              ["requiredFieldsMessage", "Required fields error"],
-              ["successHeading", "Success heading"],
-              ["successMessage", "Success message"],
-              ["newInquiryLabel", "Send another inquiry button"],
+              ["submitLabel", "Submit button label"],
+              ["submittingLabel", "Submitting state label"],
+              ["requiredFieldsMessage", "Required fields error message"],
+              ["successHeading", "Success state heading"],
+              ["successMessage", "Success state description"],
+              ["newInquiryLabel", "Send another inquiry button label"],
             ] as const
           ).map(([key, label]) => (
             <div
@@ -786,425 +553,33 @@ export default function LandingContentEditor() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Footer">
+      {/* Footer */}
+      <SectionCard title="Footer Settings">
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField
-            label="Back to top label"
-            value={form.footer?.backToTop ?? ""}
-            onChange={(backToTop) => updateSection("footer", { backToTop })}
-          />
-          <TextField
-            label="Copyright tagline"
+            label="Tagline"
             value={form.footer?.tagline ?? ""}
             onChange={(tagline) => updateSection("footer", { tagline })}
           />
+          <TextField
+            label="Back to Top Button Label"
+            value={form.footer?.backToTop ?? ""}
+            onChange={(backToTop) => updateSection("footer", { backToTop })}
+          />
           <div className="sm:col-span-2">
             <TextField
-              label="Footer value labels (one per line)"
-              rows={2}
+              label="Value Propositions (one per line)"
+              rows={3}
               value={form.footer?.valueProps?.join("\n") ?? ""}
               onChange={(value) =>
                 updateSection("footer", {
-                  valueProps: value
-                    .split("\n")
-                    .map((item) => item.trim())
-                    .filter(Boolean),
+                  valueProps: value.split("\n").filter(Boolean),
                 })
               }
             />
           </div>
         </div>
       </SectionCard>
-
-      <SectionCard title="Testimonials">
-  <div className="space-y-4">
-    {(form.testimonials ?? []).map((item, idx) => (
-      <div key={idx} className="flex items-center gap-2">
-        <textarea
-          rows={3}
-          className={fieldClass}
-          value={JSON.stringify(item, null, 2)}
-          onChange={(e) => {
-            try {
-              const parsed = JSON.parse(e.target.value);
-              setForm((prev) => ({
-                ...prev,
-                testimonials: (prev.testimonials ?? []).map((t, i) => (i === idx ? parsed : t)),
-              }));
-            } catch {}
-          }}
-        />
-        <button
-          type="button"
-          onClick={() =>
-            setForm((prev) => ({
-              ...prev,
-              testimonials: (prev.testimonials ?? []).filter((_, i) => i !== idx),
-            }))
-          }
-          className="p-1 text-red-700 hover:bg-red-50 rounded"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
-      </div>
-    ))}
-    <button
-      type="button"
-      onClick={() =>
-        setForm((prev) => ({
-          ...prev,
-          testimonials: [...(prev.testimonials ?? []), {}],
-        }))
-      }
-      className="inline-flex items-center gap-1 text-sm font-medium text-[#243629]"
-    >
-      <Plus className="h-4 w-4" /> Add testimonial
-    </button>
-  </div>
-</SectionCard>
-
-<SectionCard title="Case Studies">
-  <div className="space-y-4">
-    {(form.caseStudies ?? []).map((item, idx) => (
-      <div key={idx} className="flex items-center gap-2">
-        <textarea
-          rows={3}
-          className={fieldClass}
-          value={JSON.stringify(item, null, 2)}
-          onChange={(e) => {
-            try {
-              const parsed = JSON.parse(e.target.value);
-              setForm((prev) => ({
-                ...prev,
-                caseStudies: (prev.caseStudies ?? []).map((c, i) => (i === idx ? parsed : c)),
-              }));
-            } catch {}
-          }}
-        />
-        <button
-          type="button"
-          onClick={() =>
-            setForm((prev) => ({
-              ...prev,
-              caseStudies: (prev.caseStudies ?? []).filter((_, i) => i !== idx),
-            }))
-          }
-          className="p-1 text-red-700 hover:bg-red-50 rounded"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
-      </div>
-    ))}
-    <button
-      type="button"
-      onClick={() =>
-        setForm((prev) => ({
-          ...prev,
-          caseStudies: [...(prev.caseStudies ?? []), {}],
-        }))
-      }
-      className="inline-flex items-center gap-1 text-sm font-medium text-[#243629]"
-    >
-      <Plus className="h-4 w-4" /> Add case study
-    </button>
-  </div>
-</SectionCard>
-
-<SectionCard title="Packages">
-  <div className="space-y-4">
-    {(form.packages ?? []).map((item, idx) => (
-      <div key={idx} className="flex items-center gap-2">
-        <textarea
-          rows={3}
-          className={fieldClass}
-          value={JSON.stringify(item, null, 2)}
-          onChange={(e) => {
-            try {
-              const parsed = JSON.parse(e.target.value);
-              setForm((prev) => ({
-                ...prev,
-                packages: (prev.packages ?? []).map((p, i) => (i === idx ? parsed : p)),
-              }));
-            } catch {}
-          }}
-        />
-        <button
-          type="button"
-          onClick={() =>
-            setForm((prev) => ({
-              ...prev,
-              packages: (prev.packages ?? []).filter((_, i) => i !== idx),
-            }))
-          }
-          className="p-1 text-red-700 hover:bg-red-50 rounded"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
-      </div>
-    ))}
-    <button
-      type="button"
-      onClick={() =>
-        setForm((prev) => ({
-          ...prev,
-          packages: [...(prev.packages ?? []), {}],
-        }))
-      }
-      className="inline-flex items-center gap-1 text-sm font-medium text-[#243629]"
-    >
-      <Plus className="h-4 w-4" /> Add package
-    </button>
-  </div>
-</SectionCard>
-
-<SectionCard title="FAQs">
-  <div className="space-y-4">
-    {(form.faqs ?? []).map((item, idx) => (
-      <div key={idx} className="flex items-center gap-2">
-        <textarea
-          rows={3}
-          className={fieldClass}
-          value={JSON.stringify(item, null, 2)}
-          onChange={(e) => {
-            try {
-              const parsed = JSON.parse(e.target.value);
-              setForm((prev) => ({
-                ...prev,
-                faqs: (prev.faqs ?? []).map((f, i) => (i === idx ? parsed : f)),
-              }));
-            } catch {}
-          }}
-        />
-        <button
-          type="button"
-          onClick={() =>
-            setForm((prev) => ({
-              ...prev,
-              faqs: (prev.faqs ?? []).filter((_, i) => i !== idx),
-            }))
-          }
-          className="p-1 text-red-700 hover:bg-red-50 rounded"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
-      </div>
-    ))}
-    <button
-      type="button"
-      onClick={() =>
-        setForm((prev) => ({
-          ...prev,
-          faqs: [...(prev.faqs ?? []), {}],
-        }))
-      }
-      className="inline-flex items-center gap-1 text-sm font-medium text-[#243629]"
-    >
-      <Plus className="h-4 w-4" /> Add FAQ
-    </button>
-  </div>
-</SectionCard>
-  {/* duplicate block start
-    {(form.testimonials ?? []).map((item, idx) => (
-      <div key={idx} className=\"flex items-center gap-2\">
-        <textarea
-          rows={3}
-          className={fieldClass}
-          value={JSON.stringify(item, null, 2)}
-          onChange={(e) => {
-            try {
-              const parsed = JSON.parse(e.target.value);
-              setForm((prev) => ({
-                ...prev,
-                testimonials: (prev.testimonials ?? []).map((t, i) => (i === idx ? parsed : t)),
-              }));
-            } catch {}
-          }}
-        />
-        <button
-          type=\"button\"
-          onClick={() =>
-            setForm((prev) => ({
-              ...prev,
-              testimonials: (prev.testimonials ?? []).filter((_, i) => i !== idx),
-            }))
-          }
-          className=\"p-1 text-red-700 hover:bg-red-50 rounded\"
-        >
-          <Trash2 className=\"h-4 w-4\" />
-        </button>
-      </div>
-    ))}
-    <button
-      type=\"button\"
-      onClick={() =>
-        setForm((prev) => ({
-          ...prev,
-          testimonials: [...(prev.testimonials ?? []), {}],
-        }))
-      }
-      className=\"inline-flex items-center gap-1 text-sm font-medium text-[#243629]\"
-    >
-      <Plus className=\"h-4 w-4\" /> Add testimonial
-    </button>
-  </div>
-</SectionCard>
-
-<SectionCard title=\"Case Studies\">
-  <div className=\"space-y-4\">
-    {(form.caseStudies ?? []).map((item, idx) => (
-      <div key={idx} className=\"flex items-center gap-2\">
-        <textarea
-          rows={3}
-          className={fieldClass}
-          value={JSON.stringify(item, null, 2)}
-          onChange={(e) => {
-            try {
-              const parsed = JSON.parse(e.target.value);
-              setForm((prev) => ({
-                ...prev,
-                caseStudies: (prev.caseStudies ?? []).map((c, i) => (i === idx ? parsed : c)),
-              }));
-            } catch {}
-          }}
-        />
-        <button
-          type=\"button\"
-          onClick={() =>
-            setForm((prev) => ({
-              ...prev,
-              caseStudies: (prev.caseStudies ?? []).filter((_, i) => i !== idx),
-            }))
-          }
-          className=\"p-1 text-red-700 hover:bg-red-50 rounded\"
-        >
-          <Trash2 className=\"h-4 w-4\" />
-        </button>
-      </div>
-    ))}
-    <button
-      type=\"button\"
-      onClick={() =>
-        setForm((prev) => ({
-          ...prev,
-          caseStudies: [...(prev.caseStudies ?? []), {}],
-        }))
-      }
-      className=\"inline-flex items-center gap-1 text-sm font-medium text-[#243629]\"
-    >
-      <Plus className=\"h-4 w-4\" /> Add case study
-    </button>
-  </div>
-</SectionCard>
-
-<SectionCard title=\"Packages\">
-  <div className=\"space-y-4\">
-    {(form.packages ?? []).map((item, idx) => (
-      <div key={idx} className=\"flex items-center gap-2\">
-        <textarea
-          rows={3}
-          className={fieldClass}
-          value={JSON.stringify(item, null, 2)}
-          onChange={(e) => {
-            try {
-              const parsed = JSON.parse(e.target.value);
-              setForm((prev) => ({
-                ...prev,
-                packages: (prev.packages ?? []).map((p, i) => (i === idx ? parsed : p)),
-              }));
-            } catch {}
-          }}
-        />
-        <button
-          type=\"button\"
-          onClick={() =>
-            setForm((prev) => ({
-              ...prev,
-              packages: (prev.packages ?? []).filter((_, i) => i !== idx),
-            }))
-          }
-          className=\"p-1 text-red-700 hover:bg-red-50 rounded\"
-        >
-          <Trash2 className=\"h-4 w-4\" />
-        </button>
-      </div>
-    ))}
-    <button
-      type=\"button\"
-      onClick={() =>
-        setForm((prev) => ({
-          ...prev,
-          packages: [...(prev.packages ?? []), {}],
-        }))
-      }
-      className=\"inline-flex items-center gap-1 text-sm font-medium text-[#243629]\"
-    >
-      <Plus className=\"h-4 w-4\" /> Add package
-    </button>
-  </div>
-</SectionCard>
-
-<SectionCard title=\"FAQs\">
-  <div className=\"space-y-4\">
-    {(form.faqs ?? []).map((item, idx) => (
-      <div key={idx} className=\"flex items-center gap-2\">
-        <textarea
-          rows={3}
-          className={fieldClass}
-          value={JSON.stringify(item, null, 2)}
-          onChange={(e) => {
-            try {
-              const parsed = JSON.parse(e.target.value);
-              setForm((prev) => ({
-                ...prev,
-                faqs: (prev.faqs ?? []).map((f, i) => (i === idx ? parsed : f)),
-              }));
-            } catch {}
-          }}
-        />
-        <button
-          type=\"button\"
-          onClick={() =>
-            setForm((prev) => ({
-              ...prev,
-              faqs: (prev.faqs ?? []).filter((_, i) => i !== idx),
-            }))
-          }
-          className=\"p-1 text-red-700 hover:bg-red-50 rounded\"
-        >
-          <Trash2 className=\"h-4 w-4\" />
-        </button>
-      </div>
-    ))}
-    <button
-      type=\"button\"
-      onClick={() =>
-        setForm((prev) => ({
-          ...prev,
-          faqs: [...(prev.faqs ?? []), {}],
-        }))
-      }
-      className=\"inline-flex items-center gap-1 text-sm font-medium text-[#243629]\"
-    >
-      <Plus className=\"h-4 w-4\" /> Add FAQ
-    </button>
-  </div>
-</SectionCard>
-*/}
-<div className=\"sticky bottom-0 flex justify-end border-t border-[#E2D9C6] bg-[#FAF6EC]/95 py-4 backdrop-blur\">
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={saving}
-          className="inline-flex items-center gap-2 rounded-full bg-[#243629] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#1a281e] disabled:opacity-70"
-        >
-          {saving ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Save className="h-4 w-4" />
-          )}
-          <span>{saving ? "Saving…" : "Save Changes"}</span>
-        </button>
-      </div>
     </div>
   );
 }

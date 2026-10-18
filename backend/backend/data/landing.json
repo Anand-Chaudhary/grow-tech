@@ -75,5 +75,97 @@
     "heading": "Have an idea?",
     "highlight": "Let's build it.",
     "subhead": "Tell us about your targets, timeline, and budget. We reply within one business day with plain advice and zero sales pressure."
-  }
+  },
+  "projectsSection": {
+    "badge": "Case Studies",
+    "heading": "Projects in motion.",
+    "liveCaseLabel": "LIVE CASE",
+    "statusLabel": "Production",
+    "performanceLabel": "Performance Budget",
+    "performanceScore": "100/100"
+  },
+  "projects": [
+    {
+      "id": "6ac204167d1a2167826316ed",
+      "number": "01",
+      "category": "E-COMMERCE",
+      "title": "Client One",
+      "client": "Client One",
+      "description": "The existing website had a low conversion rate and a difficult checkout experience.",
+      "tags": [
+        "React",
+        "Node.js"
+      ],
+      "metrics": "30% Conversion",
+      "accentBg": "#243629"
+    },
+    {
+      "id": "project-1792316342040-1",
+      "number": "02",
+      "category": "Web Application",
+      "title": "Wild application",
+      "description": "wau project",
+      "tags": [
+        "Next.js",
+        "Tailwind CSS",
+        "TypeScript"
+      ],
+      "client": "Client 2",
+      "metrics": "99/100 Core Web Vitals",
+      "accentBg": "#243629"
+    }
+  ],
+  "servicesSection": {
+    "heading": "What we do."
+  },
+  "services": [
+    {
+      "id": "6ac204167d1a2167826316e6",
+      "number": "1",
+      "title": "SEO",
+      "description": "Improve search visibility and attract more qualified organic traffic.",
+      "details": [
+        "Custom Domains & DNS",
+        "Global Edge Cache",
+        "Technical SEO Verification"
+      ],
+      "slug": "seo"
+    },
+    {
+      "id": "6ac204167d1a2167826316e7",
+      "number": "2",
+      "title": "Design",
+      "description": "Create modern, intuitive interfaces designed around your users and business goals.",
+      "details": [
+        "Typography & Hierarchy",
+        "Wireframing & UI Prototypes",
+        "Design Token Architecture"
+      ],
+      "slug": "design"
+    },
+    {
+      "id": "6ac205fd39e5fb633d0e4295",
+      "number": "3",
+      "title": "Development",
+      "description": "Build fast, reliable and scalable digital products using modern technologies.",
+      "details": [
+        "Next.js & React 19",
+        "Headless CMS & APIs",
+        "Performance Engineering"
+      ],
+      "slug": "development"
+    },
+    {
+      "id": "6ac204167d1a2167826316e9",
+      "number": "4",
+      "title": "Marketing",
+      "description": "Turn your digital presence into a consistent source of qualified leads and growth.",
+      "details": [
+        "Responsive Viewports",
+        "Progressive Web Apps",
+        "Touch Gesture Precision"
+      ],
+      "slug": "marketing"
+    }
+  ]
 }

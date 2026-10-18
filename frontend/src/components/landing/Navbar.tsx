@@ -14,12 +14,12 @@ export interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Home", href: "#hero", key: "home" },
-  { label: "About", href: "#about", key: "about" },
-  { label: "Services", href: "#services", key: "services" },
-  { label: "Portfolio", href: "#portfolio", key: "portfolio" },
-  { label: "Clients", href: "#clients", key: "clients" },
-  { label: "Contact", href: "#contact", key: "contact" },
+  { label: "Home", href: "/", key: "home" },
+  { label: "About", href: "/#about", key: "about" },
+  { label: "Services", href: "/services", key: "services" },
+  { label: "Portfolio", href: "/projects", key: "portfolio" },
+  { label: "Pricing", href: "/#pricing", key: "pricing" as any },
+  { label: "Contact", href: "/contact", key: "contact" },
 ];
 
 interface NavbarProps {
@@ -117,7 +117,7 @@ export const Navbar: React.FC<NavbarProps> = ({ navigation }) => {
         {/* Right Action Button: Orange/Amber pill button as in the image */}
         <div className="hidden sm:flex items-center">
           <Link
-            href="#contact"
+            href="/contact"
             className="inline-flex items-center justify-center px-5 py-2 rounded-full text-[13.5px] font-semibold text-white bg-[#F9AD1B] hover:bg-[#e0980f] active:scale-95 transition-all shadow-[0_2px_10px_rgba(249,173,27,0.25)] hover:shadow-[0_4px_14px_rgba(249,173,27,0.35)]"
           >
             {actionLabel}
@@ -127,7 +127,7 @@ export const Navbar: React.FC<NavbarProps> = ({ navigation }) => {
         {/* Mobile menu toggle */}
         <div className="flex md:hidden items-center gap-2">
           <Link
-            href="#contact"
+            href="/contact"
             className="inline-flex sm:hidden items-center px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-[#F9AD1B]"
           >
             {actionLabel}
@@ -157,7 +157,7 @@ export const Navbar: React.FC<NavbarProps> = ({ navigation }) => {
           ))}
           <div className="pt-2 border-t border-[#E2D9C6]/60">
             <Link
-              href="#contact"
+              href="/contact"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white bg-[#F9AD1B] hover:bg-[#e0980f] transition-all"
             >
