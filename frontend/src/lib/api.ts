@@ -103,6 +103,27 @@ export interface FooterData {
   valueProps?: string[];
 }
 
+export interface PricingPackageItem {
+  id: string;
+  tier: 'LAUNCH' | 'GROWTH' | 'SCALE' | 'NOT_SURE';
+  name: string;
+  bestFor: string;
+  features: string[];
+  priceFrom: number | null;
+  currency: string;
+  priceNote?: string;
+  isHighlighted?: boolean;
+  isActive?: boolean;
+  sortOrder?: number;
+}
+
+export interface PricingSectionData {
+  badge?: string;
+  heading?: string;
+  highlight?: string;
+  subhead?: string;
+}
+
 export interface LandingPageData {
   hero?: HeroData;
   navigation?: NavigationData;
@@ -110,11 +131,12 @@ export interface LandingPageData {
   projects?: ProjectItem[];
   servicesSection?: ServicesSectionData;
   services?: ServiceGridItem[];
+  pricingSection?: PricingSectionData;
+  packages?: PricingPackageItem[];
   manifesto?: ManifestoData;
   contact?: ContactData;
   footer?: FooterData;
   caseStudies?: any[];
-  packages?: any[];
   testimonials?: any[];
   faqs?: any[];
   generatedAt?: string;
@@ -331,3 +353,118 @@ export async function getAdminProfile(): Promise<AdminUser | null> {
     return null;
   }
 }
+
+export type LeadStatus = 'NEW' | 'CONTACTED' | 'QUALIFIED' | 'WON' | 'LOST' | 'SPAM';
+
+export interface AdminLeadItem {
+  id: string;
+  name: string;
+  email: string;
+  websiteUrl?: string | null;
+  goal: string;
+  packageTier: 'LAUNCH' | 'GROWTH' | 'SCALE' | 'NOT_SURE';
+  status: LeadStatus;
+  consent?: boolean;
+  notes?: string | null;
+  contactedAt?: string | null;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface AdminLeadsResponse {
+  data: AdminLeadItem[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+/**
+ * Fetch all leads for admin dashboard with filtering and pagination
+ */
+export async function getAdminLeads(filters?: {
+  status?: string;
+  packageTier?: string;
+  q?: string;
+  page?: number;
+  limit?: number;
+}): Promise<AdminLeadsResponse | null> {
+  try {
+    const params: Record<string, any> = {};
+    if (filters?.status && filters.status !== 'ALL') params.status = filters.status;
+    if (filters?.packageTier && filters.packageTier !== 'ALL') params.packageTier = filters.packageTier;
+    if (filters?.q) params.q = filters.q;
+    if (filters?.page) params.page = filters.page;
+    if (filters?.limit) params.limit = filters.limit;
+
+    const response = await apiClient.get<ApiResponse<AdminLeadsResponse>>('/api/admin/leads', { params });
+    if (response.data?.success && response.data?.data) {
+      return response.data.data;
+    }
+    return null;
+  } catch (error: any) {
+    console.warn('[GrowTech API] Failed to fetch admin leads:', error?.response?.data?.message || error?.message);
+    return null;
+  }
+}
+
+/**
+ * Get a single lead details by id
+ */
+export async function getAdminLeadById(id: string): Promise<AdminLeadItem | null> {
+  try {
+    const response = await apiClient.get<ApiResponse<AdminLeadItem>>(`/api/admin/leads/${id}`);
+    if (response.data?.success && response.data?.data) {
+      return response.data.data;
+    }
+    return null;
+  } catch (error: any) {
+    console.warn(`[GrowTech API] Failed to fetch lead ${id}:`, error?.message);
+    return null;
+  }
+}
+
+/**
+ * Update a lead (status, notes)
+ */
+export async function updateAdminLead(
+  id: string,
+  updates: { status?: LeadStatus; notes?: string }
+): Promise<{ success: boolean; message: string; data?: AdminLeadItem }> {
+  try {
+    const response = await apiClient.patch<ApiResponse<AdminLeadItem>>(`/api/admin/leads/${id}`, updates);
+    return {
+      success: true,
+      message: response.data?.message || 'Lead updated successfully',
+      data: response.data?.data,
+    };
+  } catch (error: any) {
+    const serverMessage = error?.response?.data?.message;
+    return {
+      success: false,
+      message: serverMessage || error?.message || 'Failed to update lead.',
+    };
+  }
+}
+
+/**
+ * Delete a lead
+ */
+export async function deleteAdminLead(id: string): Promise<{ success: boolean; message: string }> {
+  try {
+    const response = await apiClient.delete<ApiResponse<null>>(`/api/admin/leads/${id}`);
+    return {
+      success: true,
+      message: response.data?.message || 'Lead deleted successfully',
+    };
+  } catch (error: any) {
+    const serverMessage = error?.response?.data?.message;
+    return {
+      success: false,
+      message: serverMessage || error?.message || 'Failed to delete lead.',
+    };
+  }
+}
+

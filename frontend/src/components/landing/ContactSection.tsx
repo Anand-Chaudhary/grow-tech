@@ -1,21 +1,42 @@
 "use client";
 
-import React, { useState } from "react";
-import { ArrowRight, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
-import { submitLead, ContactData } from "@/lib/api";
+import React, { useState, useEffect } from "react";
+import { ArrowRight, CheckCircle2, Loader2, AlertCircle, ChevronDown } from "lucide-react";
+import { submitLead, ContactData, PricingPackageItem } from "@/lib/api";
 
 interface ContactSectionProps {
   contact?: ContactData;
+  packages?: PricingPackageItem[];
+  initialTier?: "LAUNCH" | "GROWTH" | "SCALE" | "NOT_SURE";
 }
 
-export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
+export const ContactSection: React.FC<ContactSectionProps> = ({
+  contact,
+  packages,
+  initialTier = "NOT_SURE",
+}) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    websiteUrl: "",
+    packageTier: initialTier,
     message: "",
   });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    const handleSelectPlan = (e: any) => {
+      const tier = e.detail?.tier;
+      if (tier) {
+        setFormData((prev) => ({ ...prev, packageTier: tier }));
+      }
+    };
+    window.addEventListener("growtech:select-plan", handleSelectPlan);
+    return () => {
+      window.removeEventListener("growtech:select-plan", handleSelectPlan);
+    };
+  }, []);
 
   const badge = contact?.badge || "Contact";
   const heading = contact?.heading || "Have an idea?";
@@ -45,7 +66,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
       setStatus("error");
-    setErrorMessage(requiredFieldsMessage);
+      setErrorMessage(requiredFieldsMessage);
       return;
     }
 
@@ -55,12 +76,21 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
     const res = await submitLead({
       name: formData.name.trim(),
       email: formData.email.trim(),
+      websiteUrl: formData.websiteUrl.trim() || undefined,
+      packageTier: formData.packageTier,
+      goal: formData.message.trim(),
       message: formData.message.trim(),
     });
 
     if (res.success) {
       setStatus("success");
-      setFormData({ name: "", email: "", message: "" });
+      setFormData({
+        name: "",
+        email: "",
+        websiteUrl: "",
+        packageTier: "NOT_SURE",
+        message: "",
+      });
     } else {
       setStatus("error");
       setErrorMessage(res.message);
@@ -170,6 +200,88 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
                     placeholder={messagePlaceholder}
                     className="w-full py-3 bg-transparent border-b border-[#243629]/30 focus:border-[#243629] text-[15px] sm:text-base text-[#16130F] placeholder:text-stone-400 outline-none resize-none transition-colors"
                   />
+                </div>
+
+                {/* Pricing Plan Dropdown */}
+                <div className="relative group">
+                  <label
+                    htmlFor="contact-package-tier"
+                    className="block text-[11px] font-mono tracking-[0.12em] uppercase text-[#5A554C] mb-1 font-semibold group-focus-within:text-[#243629]"
+                  >
+                    Select Pricing Plan / Scope
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="contact-package-tier"
+                      value={formData.packageTier}
+                      onChange={(e) =>
+                        setFormData({ ...formData, packageTier: e.target.value as any })
+                      }
+                      className="w-full py-3 bg-transparent border-b border-[#243629]/30 focus:border-[#243629] text-[15px] sm:text-base text-[#16130F] outline-none transition-colors cursor-pointer appearance-none pr-8"
+                    >
+                      {packages && packages.length > 0 ? (
+                        packages.map((pkg) => (
+                          <option
+                            key={pkg.id || pkg.tier}
+                            value={pkg.tier}
+                            className="bg-[#FAF6EC] text-[#16130F]"
+                          >
+                            {pkg.name} {pkg.priceFrom ? `(from $${pkg.priceFrom.toLocaleString()})` : "(Custom Quote)"}
+                            {pkg.isHighlighted ? " ★ Recommended" : ""}
+                          </option>
+                        ))
+                      ) : (
+                        <>
+                          <option value="LAUNCH" className="bg-[#FAF6EC] text-[#16130F]">
+                            Launch Package — from $4,999 (MVP & Sub-Second Speed)
+                          </option>
+                          <option value="GROWTH" className="bg-[#FAF6EC] text-[#16130F]">
+                            Growth Package — from $9,999 ★ Most Popular (Scale & CRO)
+                          </option>
+                          <option value="SCALE" className="bg-[#FAF6EC] text-[#16130F]">
+                            Scale & Enterprise — Custom Quote (Full Stack & Edge)
+                          </option>
+                        </>
+                      )}
+                      <option value="NOT_SURE" className="bg-[#FAF6EC] text-[#16130F]">
+                        Custom / Advisory Consultation (Not sure yet)
+                      </option>
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-[#5A554C] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Quick Tier Pills */}
+                <div className="space-y-2">
+                  <span className="block text-[10px] font-mono tracking-[0.12em] uppercase text-[#5A554C]/70">
+                    Or click to switch plan:
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { id: "LAUNCH", label: "Launch" },
+                      { id: "GROWTH", label: "Growth ★" },
+                      { id: "SCALE", label: "Scale" },
+                      { id: "NOT_SURE", label: "Custom Scope" },
+                    ].map((tier) => (
+                      <button
+                        key={tier.id}
+                        type="button"
+                        onClick={() =>
+                          setFormData({
+                            ...formData,
+                            packageTier: tier.id as any,
+                          })
+                        }
+                        className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer ${
+                          formData.packageTier === tier.id
+                            ? "bg-[#243629] text-white font-medium shadow-sm"
+                            : "bg-[#FAF4E6] text-[#5A554C] border border-[#E2D9C6] hover:bg-[#EFE8D8]"
+                        }`}
+                      >
+                        {tier.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Submit Button matching screenshot */}

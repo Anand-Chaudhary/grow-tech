@@ -1,6 +1,7 @@
 // Shared UI components for admin content editor pages
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
+export { AdminSidebar } from "@/components/admin";
 
 export const fieldClass = "w-full p-2 bg-[#FAF6EC] border border-[#E2D9C6] rounded text-sm text-[#16130F]";
 export const labelClass = "block text-xs font-mono uppercase text-[#5A554C] mb-1";

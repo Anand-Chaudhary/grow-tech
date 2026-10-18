@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Inbox,
@@ -12,87 +12,117 @@ import {
   TrendingUp,
   MoreVertical,
   Plus,
+  Briefcase,
+  DollarSign,
+  FileText,
+  Loader2,
 } from "lucide-react";
+import {
+  getAdminLeads,
+  getLandingData,
+  AdminLeadItem,
+  LandingPageData,
+} from "@/lib/api";
 
-interface StatCardProps {
-  title: string;
-  value: string;
-  change: string;
-  subtext: string;
-  icon: React.ReactNode;
-}
-
-const STATS: StatCardProps[] = [
-  {
-    title: "Total Inquiries",
-    value: "28",
-    change: "+12% this month",
-    subtext: "Site review form submissions",
-    icon: <Inbox className="w-4 h-4 text-[#243629]" />,
-  },
-  {
-    title: "Pending Reviews",
-    value: "4",
-    change: "Requires response",
-    subtext: "Within 24h SLA target",
-    icon: <Clock className="w-4 h-4 text-[#F9AD1B]" />,
-  },
-  {
-    title: "Active Services",
-    value: "4",
-    change: "4 bento tiles",
-    subtext: "Published on landing page",
-    icon: <Layers className="w-4 h-4 text-[#3D9129]" />,
-  },
-  {
-    title: "Performance Score",
-    value: "99/100",
-    change: "0.6s avg LCP",
-    subtext: "Google Core Web Vitals",
-    icon: <Zap className="w-4 h-4 text-[#243629]" />,
-  },
-];
-
-const RECENT_LEADS = [
+const DEFAULT_LEADS: AdminLeadItem[] = [
   {
     id: "lead-1",
     name: "Dr. Marcus Vance",
     email: "marcus@apexhealth.com",
     goal: "Need sub-second booking system and custom clinical routing.",
-    tier: "Growth",
+    packageTier: "GROWTH",
     status: "NEW",
-    date: "10 mins ago",
+    createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
   },
   {
     id: "lead-2",
     name: "Elena Rostova",
     email: "elena@terradesign.com",
     goal: "Transforming 400-item PDF catalog into instant ordering portal.",
-    tier: "Scale",
+    packageTier: "SCALE",
     status: "QUALIFIED",
-    date: "2 hours ago",
+    createdAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
   },
   {
     id: "lead-3",
     name: "Julian Mercer",
     email: "julian@beaconwealth.io",
     goal: "Editorial website redesign with transparent fee calculator.",
-    tier: "Growth",
+    packageTier: "GROWTH",
     status: "CONTACTED",
-    date: "Yesterday",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
   },
   {
     id: "lead-4",
     name: "Sarah Jenkins",
     email: "sarah@lumina-studio.co",
     goal: "Bespoke brand portfolio with Shopify checkout integration.",
-    tier: "Launch",
+    packageTier: "LAUNCH",
     status: "CONTACTED",
-    date: "Oct 14",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
   },
 ];
 
 export default function AdminDashboardPage() {
+  const [leads, setLeads] = useState<AdminLeadItem[]>(DEFAULT_LEADS);
+  const [landingData, setLandingData] = useState<LandingPageData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      getAdminLeads().catch(() => null),
+      getLandingData().catch(() => null),
+    ])
+      .then(([leadsRes, landingRes]) => {
+        if (leadsRes && leadsRes.data && leadsRes.data.length > 0) {
+          setLeads(leadsRes.data);
+        }
+        if (landingRes) {
+          setLandingData(landingRes);
+        }
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const totalLeads = leads.length;
+  const pendingReviews = leads.filter(
+    (l) => l.status === "NEW" || l.status === "CONTACTED"
+  ).length;
+  const activeServices = landingData?.services?.length || 4;
+  const performanceScore =
+    landingData?.projectsSection?.performanceScore || "99/100";
+
+  const STATS = [
+    {
+      title: "Total Inquiries",
+      value: String(totalLeads),
+      change: `${leads.filter((l) => l.status === "NEW").length} new inquiries`,
+      subtext: "Site review form submissions",
+      icon: <Inbox className="w-4 h-4 text-[#243629]" />,
+    },
+    {
+      title: "Pending Reviews",
+      value: String(pendingReviews),
+      change: "Requires response",
+      subtext: "Within 24h SLA target",
+      icon: <Clock className="w-4 h-4 text-[#F9AD1B]" />,
+    },
+    {
+      title: "Active Services",
+      value: String(activeServices),
+      change: "Configured offerings",
+      subtext: "Published on landing page",
+      icon: <Layers className="w-4 h-4 text-[#3D9129]" />,
+    },
+    {
+      title: "Performance Score",
+      value: performanceScore,
+      change: "0.4s avg LCP",
+      subtext: "Google Core Web Vitals",
+      icon: <Zap className="w-4 h-4 text-[#243629]" />,
+    },
+  ];
+
   return (
     <div className="space-y-8">
       {/* Page Title & Quick Action Header */}
@@ -112,7 +142,7 @@ export default function AdminDashboardPage() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-white bg-[#243629] hover:bg-[#1a281e] transition-colors shadow-sm"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>View All Leads</span>
+            <span>Manage All Leads</span>
           </Link>
         </div>
       </div>
@@ -157,12 +187,12 @@ export default function AdminDashboardPage() {
                 Recent Inquiries
               </h2>
               <p className="text-xs text-[#5A554C]">
-                Latest submissions from the "Book a free site review" contact form
+                Latest submissions from the frontend contact form
               </p>
             </div>
             <Link
               href="/admin/leads"
-              className="text-xs font-mono text-[#3D9129] hover:underline flex items-center gap-1"
+              className="text-xs font-mono text-[#3D9129] hover:underline flex items-center gap-1 font-medium"
             >
               <span>View all</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -178,12 +208,11 @@ export default function AdminDashboardPage() {
                   <th className="py-3 px-2">Project Goal</th>
                   <th className="py-3 px-2">Tier</th>
                   <th className="py-3 px-2">Status</th>
-                  <th className="py-3 px-2">Submitted</th>
-                  <th className="py-3 px-2 text-right">Actions</th>
+                  <th className="py-3 px-2 text-right">Submitted</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E2D9C6]/40">
-                {RECENT_LEADS.map((lead) => (
+                {leads.slice(0, 5).map((lead) => (
                   <tr key={lead.id} className="hover:bg-[#FAF6EC]/50 transition-colors">
                     <td className="py-3 px-2">
                       <div className="font-semibold text-[#16130F]">{lead.name}</div>
@@ -193,7 +222,7 @@ export default function AdminDashboardPage() {
                       {lead.goal}
                     </td>
                     <td className="py-3 px-2 font-mono text-[11px] text-[#243629]">
-                      {lead.tier}
+                      {lead.packageTier || "General"}
                     </td>
                     <td className="py-3 px-2">
                       <span
@@ -208,16 +237,11 @@ export default function AdminDashboardPage() {
                         {lead.status}
                       </span>
                     </td>
-                    <td className="py-3 px-2 text-[11px] font-mono text-[#5A554C]">
-                      {lead.date}
-                    </td>
-                    <td className="py-3 px-2 text-right">
-                      <button
-                        className="p-1 text-[#5A554C] hover:text-[#16130F] rounded hover:bg-[#EFE8D8] transition-colors"
-                        aria-label="Lead actions"
-                      >
-                        <MoreVertical className="w-4 h-4" />
-                      </button>
+                    <td className="py-3 px-2 text-[11px] font-mono text-[#5A554C] text-right">
+                      {new Date(lead.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
                     </td>
                   </tr>
                 ))}
@@ -226,12 +250,12 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Right Column: Quick Management & Status (4 cols) */}
+        {/* Right Column: Quick Management & Shortcuts (4 cols) */}
         <div className="lg:col-span-4 space-y-6">
-          {/* Quick Actions Panel */}
+          {/* Quick Management Panel */}
           <div className="bg-white/80 border border-[#E2D9C6] rounded-2xl p-6 shadow-[0_2px_12px_rgba(36,54,41,0.02)]">
             <h3 className="font-serif text-lg text-[#16130F] mb-3">
-              Quick Management
+              Management Modules
             </h3>
             <div className="space-y-2">
               <Link
@@ -240,9 +264,9 @@ export default function AdminDashboardPage() {
               >
                 <div className="flex items-center gap-2.5">
                   <Layers className="w-4 h-4 text-[#3D9129]" />
-                  <span>Edit Bento Services (4)</span>
+                  <span>Services Offerings</span>
                 </div>
-                <ChevronRight className="w-4 h-4 text-[#5A554C]" />
+                <ChevronRight className="w-3.5 h-3.5 text-[#5A554C]" />
               </Link>
 
               <Link
@@ -250,10 +274,32 @@ export default function AdminDashboardPage() {
                 className="flex items-center justify-between p-3 rounded-xl bg-[#FAF6EC] hover:bg-[#EFE8D8] border border-[#E2D9C6]/60 text-xs font-medium text-[#16130F] transition-colors"
               >
                 <div className="flex items-center gap-2.5">
-                  <TrendingUp className="w-4 h-4 text-[#243629]" />
-                  <span>Update Projects In Motion</span>
+                  <Briefcase className="w-4 h-4 text-[#243629]" />
+                  <span>Projects & Work</span>
                 </div>
-                <ChevronRight className="w-4 h-4 text-[#5A554C]" />
+                <ChevronRight className="w-3.5 h-3.5 text-[#5A554C]" />
+              </Link>
+
+              <Link
+                href="/admin/pricing"
+                className="flex items-center justify-between p-3 rounded-xl bg-[#FAF6EC] hover:bg-[#EFE8D8] border border-[#E2D9C6]/60 text-xs font-medium text-[#16130F] transition-colors"
+              >
+                <div className="flex items-center gap-2.5">
+                  <DollarSign className="w-4 h-4 text-[#3D9129]" />
+                  <span>Pricing & Plans</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-[#5A554C]" />
+              </Link>
+
+              <Link
+                href="/admin/leads"
+                className="flex items-center justify-between p-3 rounded-xl bg-[#FAF6EC] hover:bg-[#EFE8D8] border border-[#E2D9C6]/60 text-xs font-medium text-[#16130F] transition-colors"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Inbox className="w-4 h-4 text-[#F9AD1B]" />
+                  <span>Leads & Pipeline</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-[#5A554C]" />
               </Link>
 
               <Link
@@ -261,41 +307,28 @@ export default function AdminDashboardPage() {
                 className="flex items-center justify-between p-3 rounded-xl bg-[#FAF6EC] hover:bg-[#EFE8D8] border border-[#E2D9C6]/60 text-xs font-medium text-[#16130F] transition-colors"
               >
                 <div className="flex items-center gap-2.5">
-                  <Zap className="w-4 h-4 text-[#F9AD1B]" />
-                  <span>Hero & Marquee Cards</span>
+                  <FileText className="w-4 h-4 text-[#3D9129]" />
+                  <span>Content, Hero & SEO</span>
                 </div>
-                <ChevronRight className="w-4 h-4 text-[#5A554C]" />
+                <ChevronRight className="w-3.5 h-3.5 text-[#5A554C]" />
               </Link>
             </div>
           </div>
 
-          {/* System & API Environment Card */}
-          <div className="bg-[#FAF4E6] border border-[#E2D9C6] rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-mono uppercase tracking-wider text-[#5A554C]">
-                Environment
-              </span>
-              <span className="text-[10px] font-mono text-emerald-800 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full">
-                Active
-              </span>
-            </div>
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between py-1 border-b border-[#E2D9C6]/60">
-                <span className="text-[#5A554C]">Frontend Framework</span>
-                <span className="font-mono font-semibold text-[#16130F]">Next.js 16 (Turbopack)</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-[#E2D9C6]/60">
-                <span className="text-[#5A554C]">API Server</span>
-                <span className="font-mono font-semibold text-[#16130F]">Express + TS (:5000)</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-[#E2D9C6]/60">
-                <span className="text-[#5A554C]">Database</span>
-                <span className="font-mono font-semibold text-[#16130F]">MongoDB + Prisma</span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-[#5A554C]">HTTP Client</span>
-                <span className="font-mono font-semibold text-[#16130F]">Axios</span>
-              </div>
+          {/* SLA Performance Card */}
+          <div className="rounded-2xl border border-[#E2D9C6] bg-[#243629] p-6 text-white shadow-sm space-y-3">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#A2E391]">
+              Performance Status
+            </span>
+            <h4 className="font-serif text-xl font-normal">
+              Sub-Second Speed Target
+            </h4>
+            <p className="text-xs text-white/80 leading-relaxed font-light">
+              Frontend production build is configured with Next.js App Router, edge caching, and optimized font loading for zero layout shift.
+            </p>
+            <div className="pt-2 flex items-center justify-between text-xs font-mono text-white/60 border-t border-white/10">
+              <span>LCP Target</span>
+              <span className="text-[#A2E391] font-bold">&lt; 0.8s</span>
             </div>
           </div>
         </div>

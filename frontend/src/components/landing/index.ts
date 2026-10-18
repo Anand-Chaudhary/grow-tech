@@ -5,4 +5,5 @@ export * from "./ProjectsInMotion";
 export * from "./WhatWeDo";
 export * from "./Manifesto";
 export * from "./ContactSection";
+export * from "./PricingSection";
 export * from "./Footer";

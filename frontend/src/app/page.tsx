@@ -7,6 +7,7 @@ import {
   ProjectsInMotion,
   WhatWeDo,
   Manifesto,
+  PricingSection,
   ContactSection,
   Footer,
 } from "@/component/landing";
@@ -56,8 +57,17 @@ export default function Home() {
       {/* Design and tech manifesto statement */}
       <Manifesto manifesto={landingData?.manifesto} />
 
-      {/* Have an idea? Let's build it contact section */}
-      <ContactSection contact={landingData?.contact} />
+      {/* Transparent Pricing Packages section */}
+      <PricingSection
+        packages={landingData?.packages}
+        pricingSection={landingData?.pricingSection}
+      />
+
+      {/* Have an idea? Let's build it contact section with dynamic plan selection */}
+      <ContactSection
+        contact={landingData?.contact}
+        packages={landingData?.packages}
+      />
 
       {/* Clean footer with Grow Tech logo */}
       <Footer footer={landingData?.footer} navigation={landingData?.navigation} />

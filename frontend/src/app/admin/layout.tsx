@@ -1,71 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import {
-  LayoutDashboard,
-  Inbox,
-  Layers,
-  Briefcase,
-  FileText,
-  Settings,
-  LogOut,
-  ExternalLink,
-  Search,
-  Menu,
-  X,
-  Bell,
-} from "lucide-react";
-import logo from "@/assets/logo.svg";
-import {
-  logoutAdmin,
-  getAdminProfile,
-  getStoredAdmin,
-  AdminUser,
-} from "@/lib/api";
-
-interface NavItem {
-  label: string;
-  href: string;
-  icon: React.ReactNode;
-  badge?: string;
-}
-
-const NAV_ITEMS: NavItem[] = [
-  {
-    label: "Overview",
-    href: "/admin",
-    icon: <LayoutDashboard className="w-4 h-4" />,
-  },
-  {
-    label: "Leads & Inquiries",
-    href: "/admin/leads",
-    icon: <Inbox className="w-4 h-4" />,
-    badge: "5",
-  },
-  {
-    label: "Services",
-    href: "/admin/services",
-    icon: <Layers className="w-4 h-4" />,
-  },
-  {
-    label: "Projects & Work",
-    href: "/admin/projects",
-    icon: <Briefcase className="w-4 h-4" />,
-  },
-  {
-    label: "Content & SEO",
-    href: "/admin/content",
-    icon: <FileText className="w-4 h-4" />,
-  },
-  {
-    label: "Settings",
-    href: "/admin/settings",
-    icon: <Settings className="w-4 h-4" />,
-  },
-];
+import React, { useState } from "react";
+import { usePathname } from "next/navigation";
+import { Search, Menu, Bell } from "lucide-react";
+import { AdminSidebar } from "@/components/admin";
+import { getStoredAdmin } from "@/lib/api";
 
 export default function AdminLayout({
   children,
@@ -73,168 +12,38 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
-
-  useEffect(() => {
-    // Only fetch auth profile if not on login page
-    if (pathname === "/admin/login") return;
-
-    const cached = getStoredAdmin();
-    if (cached) {
-      setAdminUser(cached);
-    }
-
-    getAdminProfile().then((profile) => {
-      if (profile) {
-        setAdminUser(profile);
-      }
-    });
-  }, [pathname]);
-
-  const handleLogout = async () => {
-    await logoutAdmin();
-    router.push("/admin/login");
-  };
 
   // If this is the login route inside admin, don't wrap with admin shell
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
 
-  const adminName = adminUser?.name || "Grow Tech Admin";
-  const adminEmail = adminUser?.email || "admin@growtech.in";
+  const adminUser = getStoredAdmin();
   const adminRole = adminUser?.role || "OWNER";
-  const initials = adminName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 
   return (
     <div className="min-h-screen bg-[#FAF6EC] flex text-[#16130F]">
-      {/* Mobile Sidebar Backdrop */}
-      {mobileSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-          onClick={() => setMobileSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar Navigation */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#EFE8D8] border-r border-[#E2D9C6] flex flex-col justify-between transition-transform duration-300 lg:static lg:translate-x-0 ${
-          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div>
-          {/* Sidebar Top: Logo & Badge */}
-          <div className="h-16 px-6 border-b border-[#E2D9C6] flex items-center justify-between">
-            <Link href="/admin" className="flex items-center gap-2">
-              <Image src={logo} alt="Grow Tech" width={110} height={36} priority />
-              <span className="text-[10px] font-mono uppercase tracking-wider bg-[#243629] text-white px-2 py-0.5 rounded">
-                Admin
-              </span>
-            </Link>
-            <button
-              onClick={() => setMobileSidebarOpen(false)}
-              className="lg:hidden p-1 text-[#5A554C] hover:text-[#16130F] cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Navigation Items */}
-          <nav className="p-4 space-y-1">
-            <div className="px-3 py-2 text-[10px] font-mono uppercase tracking-[0.12em] text-[#5A554C] font-semibold">
-              Management
-            </div>
-            {NAV_ITEMS.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileSidebarOpen(false)}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-[#243629] text-white shadow-sm"
-                      : "text-[#5A554C] hover:bg-[#FAF6EC] hover:text-[#16130F]"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className={isActive ? "text-white" : "text-[#5A554C]"}>
-                      {item.icon}
-                    </span>
-                    <span>{item.label}</span>
-                  </div>
-                  {item.badge && (
-                    <span
-                      className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
-                        isActive
-                          ? "bg-white/20 text-white"
-                          : "bg-[#243629]/10 text-[#243629]"
-                      }`}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Sidebar Bottom: User Profile & Actions */}
-        <div className="p-4 border-t border-[#E2D9C6] space-y-3">
-          <Link
-            href="/"
-            target="_blank"
-            className="flex items-center justify-between px-3.5 py-2 rounded-xl text-xs text-[#5A554C] hover:bg-[#FAF6EC] hover:text-[#16130F] transition-colors"
-          >
-            <span className="flex items-center gap-2">
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>View Live Website</span>
-            </span>
-            <span className="text-[10px] font-mono text-[#3D9129]">growtech.in</span>
-          </Link>
-
-          {/* User Card */}
-          <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#FAF6EC] border border-[#E2D9C6]/60">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-[#243629] text-white flex items-center justify-center text-xs font-mono font-semibold">
-                {initials || "GT"}
-              </div>
-              <div className="max-w-[120px] truncate">
-                <div className="text-xs font-semibold text-[#16130F] truncate">
-                  {adminName}
-                </div>
-                <div className="text-[10px] text-[#5A554C] font-mono truncate">
-                  {adminEmail}
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              title="Sign Out"
-              className="p-1.5 text-[#5A554C] hover:text-red-700 hover:bg-white rounded-lg transition-colors cursor-pointer"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </aside>
+      {/* 
+        Standalone Separate Sidebar Component:
+        - Fits full viewport height (h-screen max-h-screen)
+        - Sticky top-0 (stays pinned, does NOT scroll with page)
+        - Internal scroll only for navigation items if needed on short screens
+      */}
+      <AdminSidebar
+        mobileOpen={mobileSidebarOpen}
+        onCloseMobile={() => setMobileSidebarOpen(false)}
+      />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
         {/* Top Header */}
-        <header className="h-16 bg-[#FAF6EC] border-b border-[#E2D9C6] px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30">
+        <header className="h-16 bg-[#FAF6EC]/90 backdrop-blur-sm border-b border-[#E2D9C6] px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileSidebarOpen(true)}
               className="lg:hidden p-2 text-[#5A554C] hover:text-[#16130F] rounded-lg border border-[#E2D9C6] cursor-pointer"
+              aria-label="Open navigation menu"
             >
               <Menu className="w-4 h-4" />
             </button>

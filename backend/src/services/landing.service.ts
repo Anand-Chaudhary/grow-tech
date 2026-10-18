@@ -26,6 +26,8 @@ export const loadLandingOverrides = async (): Promise<Partial<LandingResponseDat
 export const saveLandingOverrides = async (data: Partial<LandingResponseData>): Promise<void> => {
   const dir = path.dirname(dataFilePath);
   await fs.mkdir(dir, { recursive: true });
-  const json = JSON.stringify(data, null, 2);
+  const existing = await loadLandingOverrides();
+  const merged = { ...existing, ...data };
+  const json = JSON.stringify(merged, null, 2);
   await fs.writeFile(dataFilePath, json, 'utf-8');
 };

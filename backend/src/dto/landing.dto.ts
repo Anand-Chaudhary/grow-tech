@@ -98,6 +98,13 @@ export interface ContactSectionData {
   newInquiryLabel?: string;
 }
 
+export interface PricingSectionData {
+  badge?: string;
+  heading?: string;
+  highlight?: string;
+  subhead?: string;
+}
+
 export interface FooterSectionData {
   backToTop?: string;
   tagline?: string;
@@ -111,11 +118,12 @@ export interface LandingResponseData {
   projects: ProjectItem[];
   servicesSection?: ServicesSectionData;
   services: ServiceGridItem[];
+  pricingSection?: PricingSectionData;
+  packages: any[];
   manifesto: ManifestoSectionData;
   contact: ContactSectionData;
   footer?: FooterSectionData;
   caseStudies: any[];
-  packages: any[];
   testimonials: any[];
   faqs: any[];
   generatedAt: string;
@@ -280,3 +288,73 @@ export const toProjectDto = (cs: CaseStudy, index = 0): ProjectItem => {
     accentBg: index % 2 === 0 ? '#243629' : '#1F2E22',
   };
 };
+
+export const DEFAULT_PRICING_SECTION: PricingSectionData = {
+  badge: 'Transparent Pricing',
+  heading: 'Engineered packages built to scale.',
+  highlight: 'built to scale.',
+  subhead: 'Guaranteed sub-second speed, 100% client code ownership, and zero agency markups.',
+};
+
+export const DEFAULT_PACKAGES = [
+  {
+    id: 'pkg-launch',
+    tier: 'LAUNCH',
+    name: 'Launch Package',
+    bestFor: 'Startups and fast-moving teams needing a sub-second MVP',
+    features: [
+      'Next.js 15 & React 19 App Router',
+      'Sub-second Largest Contentful Paint (<0.8s)',
+      'Responsive design & fluid viewports',
+      'Technical SEO semantic structure',
+      '100% code & domain ownership',
+    ],
+    priceFrom: 4999,
+    currency: 'USD',
+    priceNote: 'Fixed scope • 2-3 weeks turnaround',
+    isHighlighted: false,
+    isActive: true,
+    sortOrder: 1,
+  },
+  {
+    id: 'pkg-growth',
+    tier: 'GROWTH',
+    name: 'Growth Package',
+    bestFor: 'Growing businesses demanding conversion and high-throughput stability',
+    features: [
+      'Everything in Launch Package',
+      'Custom headless CMS or Shopify checkout integration',
+      'Conversion Rate Optimization (CRO)',
+      'Core Web Vitals 95+ score guarantee',
+      'Automated analytics & lead pipeline',
+      'Priority SLA & direct Slack channel',
+    ],
+    priceFrom: 9999,
+    currency: 'USD',
+    priceNote: 'Most popular • 4-6 weeks turnaround',
+    isHighlighted: true,
+    isActive: true,
+    sortOrder: 2,
+  },
+  {
+    id: 'pkg-scale',
+    tier: 'SCALE',
+    name: 'Scale & Enterprise',
+    bestFor: 'Established brands, custom digital products, and high-load web systems',
+    features: [
+      'Everything in Growth Package',
+      'Bespoke full-stack web applications & microservices',
+      'Edge caching & high-throughput database design',
+      'Role-based access control & security auditing',
+      'Comprehensive QA test suite & automated CI/CD',
+      'Ongoing technical advisory & SLA support',
+    ],
+    priceFrom: null,
+    currency: 'USD',
+    priceNote: 'Custom quote based on technical scope',
+    isHighlighted: false,
+    isActive: true,
+    sortOrder: 3,
+  },
+];
+

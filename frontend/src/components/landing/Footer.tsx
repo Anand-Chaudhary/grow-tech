@@ -29,19 +29,22 @@ export const Footer: React.FC<FooterProps> = ({ footer, navigation }) => {
 
           {/* Nav links */}
           <div className="flex flex-wrap items-center gap-6 text-xs sm:text-[13px] text-[#5A554C]">
-            <Link href="#hero" className="hover:text-[#243629] transition-colors">
+            <Link href="/" className="hover:text-[#243629] transition-colors">
               {navigation?.home || "Home"}
             </Link>
-            <Link href="#about" className="hover:text-[#243629] transition-colors">
+            <Link href="/#about" className="hover:text-[#243629] transition-colors">
               {navigation?.about || "About"}
             </Link>
-            <Link href="#services" className="hover:text-[#243629] transition-colors">
+            <Link href="/services" className="hover:text-[#243629] transition-colors">
               {navigation?.services || "Services"}
             </Link>
-            <Link href="#portfolio" className="hover:text-[#243629] transition-colors">
+            <Link href="/projects" className="hover:text-[#243629] transition-colors">
               {navigation?.portfolio || "Portfolio"}
             </Link>
-            <Link href="#contact" className="hover:text-[#243629] transition-colors">
+            <Link href="/#pricing" className="hover:text-[#243629] transition-colors">
+              Pricing
+            </Link>
+            <Link href="/contact" className="hover:text-[#243629] transition-colors">
               {navigation?.contact || "Contact"}
             </Link>
           </div>

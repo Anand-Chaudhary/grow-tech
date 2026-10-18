@@ -11,6 +11,8 @@ import {
   DEFAULT_SERVICES,
   DEFAULT_MANIFESTO,
   DEFAULT_CONTACT,
+  DEFAULT_PRICING_SECTION,
+  DEFAULT_PACKAGES,
   toProjectDto,
 } from '../dto/landing.dto';
 
@@ -45,6 +47,10 @@ export const getLandingData = async () => {
   // Load any custom overrides saved via the admin UI. These may contain partial fields such as hero, manifesto, or contact.
   const overrides = await landingService.loadLandingOverrides();
 
+  const mappedPackages =
+    overrides.packages ??
+    (packages.length > 0 ? packages.map(toPackageDto) : DEFAULT_PACKAGES);
+
   return {
     hero: overrides.hero ?? DEFAULT_HERO_DATA,
     navigation: overrides.navigation,
@@ -52,12 +58,13 @@ export const getLandingData = async () => {
     projects: overrides.projects ?? mappedProjects,
     servicesSection: overrides.servicesSection,
     services: overrides.services ?? mappedServices,
+    pricingSection: overrides.pricingSection ?? DEFAULT_PRICING_SECTION,
+    packages: mappedPackages,
     manifesto: overrides.manifesto ?? DEFAULT_MANIFESTO,
     contact: overrides.contact ?? DEFAULT_CONTACT,
     footer: overrides.footer,
     // Preserved for backwards compatibility with other consumers
     caseStudies: caseStudies.map(toCaseStudyDto),
-    packages: packages.map(toPackageDto),
     testimonials: testimonials.map(toTestimonialDto),
     faqs: faqs.map(toFaqDto),
     generatedAt: new Date().toISOString(),
