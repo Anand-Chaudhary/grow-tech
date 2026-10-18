@@ -816,7 +816,381 @@ export default function LandingContentEditor() {
         </div>
       </SectionCard>
 
-      <div className="sticky bottom-0 flex justify-end border-t border-[#E2D9C6] bg-[#FAF6EC]/95 py-4 backdrop-blur">
+      <SectionCard title="Testimonials">
+  <div className="space-y-4">
+    {(form.testimonials ?? []).map((item, idx) => (
+      <div key={idx} className="flex items-center gap-2">
+        <textarea
+          rows={3}
+          className={fieldClass}
+          value={JSON.stringify(item, null, 2)}
+          onChange={(e) => {
+            try {
+              const parsed = JSON.parse(e.target.value);
+              setForm((prev) => ({
+                ...prev,
+                testimonials: (prev.testimonials ?? []).map((t, i) => (i === idx ? parsed : t)),
+              }));
+            } catch {}
+          }}
+        />
+        <button
+          type="button"
+          onClick={() =>
+            setForm((prev) => ({
+              ...prev,
+              testimonials: (prev.testimonials ?? []).filter((_, i) => i !== idx),
+            }))
+          }
+          className="p-1 text-red-700 hover:bg-red-50 rounded"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
+    ))}
+    <button
+      type="button"
+      onClick={() =>
+        setForm((prev) => ({
+          ...prev,
+          testimonials: [...(prev.testimonials ?? []), {}],
+        }))
+      }
+      className="inline-flex items-center gap-1 text-sm font-medium text-[#243629]"
+    >
+      <Plus className="h-4 w-4" /> Add testimonial
+    </button>
+  </div>
+</SectionCard>
+
+<SectionCard title="Case Studies">
+  <div className="space-y-4">
+    {(form.caseStudies ?? []).map((item, idx) => (
+      <div key={idx} className="flex items-center gap-2">
+        <textarea
+          rows={3}
+          className={fieldClass}
+          value={JSON.stringify(item, null, 2)}
+          onChange={(e) => {
+            try {
+              const parsed = JSON.parse(e.target.value);
+              setForm((prev) => ({
+                ...prev,
+                caseStudies: (prev.caseStudies ?? []).map((c, i) => (i === idx ? parsed : c)),
+              }));
+            } catch {}
+          }}
+        />
+        <button
+          type="button"
+          onClick={() =>
+            setForm((prev) => ({
+              ...prev,
+              caseStudies: (prev.caseStudies ?? []).filter((_, i) => i !== idx),
+            }))
+          }
+          className="p-1 text-red-700 hover:bg-red-50 rounded"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
+    ))}
+    <button
+      type="button"
+      onClick={() =>
+        setForm((prev) => ({
+          ...prev,
+          caseStudies: [...(prev.caseStudies ?? []), {}],
+        }))
+      }
+      className="inline-flex items-center gap-1 text-sm font-medium text-[#243629]"
+    >
+      <Plus className="h-4 w-4" /> Add case study
+    </button>
+  </div>
+</SectionCard>
+
+<SectionCard title="Packages">
+  <div className="space-y-4">
+    {(form.packages ?? []).map((item, idx) => (
+      <div key={idx} className="flex items-center gap-2">
+        <textarea
+          rows={3}
+          className={fieldClass}
+          value={JSON.stringify(item, null, 2)}
+          onChange={(e) => {
+            try {
+              const parsed = JSON.parse(e.target.value);
+              setForm((prev) => ({
+                ...prev,
+                packages: (prev.packages ?? []).map((p, i) => (i === idx ? parsed : p)),
+              }));
+            } catch {}
+          }}
+        />
+        <button
+          type="button"
+          onClick={() =>
+            setForm((prev) => ({
+              ...prev,
+              packages: (prev.packages ?? []).filter((_, i) => i !== idx),
+            }))
+          }
+          className="p-1 text-red-700 hover:bg-red-50 rounded"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
+    ))}
+    <button
+      type="button"
+      onClick={() =>
+        setForm((prev) => ({
+          ...prev,
+          packages: [...(prev.packages ?? []), {}],
+        }))
+      }
+      className="inline-flex items-center gap-1 text-sm font-medium text-[#243629]"
+    >
+      <Plus className="h-4 w-4" /> Add package
+    </button>
+  </div>
+</SectionCard>
+
+<SectionCard title="FAQs">
+  <div className="space-y-4">
+    {(form.faqs ?? []).map((item, idx) => (
+      <div key={idx} className="flex items-center gap-2">
+        <textarea
+          rows={3}
+          className={fieldClass}
+          value={JSON.stringify(item, null, 2)}
+          onChange={(e) => {
+            try {
+              const parsed = JSON.parse(e.target.value);
+              setForm((prev) => ({
+                ...prev,
+                faqs: (prev.faqs ?? []).map((f, i) => (i === idx ? parsed : f)),
+              }));
+            } catch {}
+          }}
+        />
+        <button
+          type="button"
+          onClick={() =>
+            setForm((prev) => ({
+              ...prev,
+              faqs: (prev.faqs ?? []).filter((_, i) => i !== idx),
+            }))
+          }
+          className="p-1 text-red-700 hover:bg-red-50 rounded"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
+    ))}
+    <button
+      type="button"
+      onClick={() =>
+        setForm((prev) => ({
+          ...prev,
+          faqs: [...(prev.faqs ?? []), {}],
+        }))
+      }
+      className="inline-flex items-center gap-1 text-sm font-medium text-[#243629]"
+    >
+      <Plus className="h-4 w-4" /> Add FAQ
+    </button>
+  </div>
+</SectionCard>
+  {/* duplicate block start
+    {(form.testimonials ?? []).map((item, idx) => (
+      <div key={idx} className=\"flex items-center gap-2\">
+        <textarea
+          rows={3}
+          className={fieldClass}
+          value={JSON.stringify(item, null, 2)}
+          onChange={(e) => {
+            try {
+              const parsed = JSON.parse(e.target.value);
+              setForm((prev) => ({
+                ...prev,
+                testimonials: (prev.testimonials ?? []).map((t, i) => (i === idx ? parsed : t)),
+              }));
+            } catch {}
+          }}
+        />
+        <button
+          type=\"button\"
+          onClick={() =>
+            setForm((prev) => ({
+              ...prev,
+              testimonials: (prev.testimonials ?? []).filter((_, i) => i !== idx),
+            }))
+          }
+          className=\"p-1 text-red-700 hover:bg-red-50 rounded\"
+        >
+          <Trash2 className=\"h-4 w-4\" />
+        </button>
+      </div>
+    ))}
+    <button
+      type=\"button\"
+      onClick={() =>
+        setForm((prev) => ({
+          ...prev,
+          testimonials: [...(prev.testimonials ?? []), {}],
+        }))
+      }
+      className=\"inline-flex items-center gap-1 text-sm font-medium text-[#243629]\"
+    >
+      <Plus className=\"h-4 w-4\" /> Add testimonial
+    </button>
+  </div>
+</SectionCard>
+
+<SectionCard title=\"Case Studies\">
+  <div className=\"space-y-4\">
+    {(form.caseStudies ?? []).map((item, idx) => (
+      <div key={idx} className=\"flex items-center gap-2\">
+        <textarea
+          rows={3}
+          className={fieldClass}
+          value={JSON.stringify(item, null, 2)}
+          onChange={(e) => {
+            try {
+              const parsed = JSON.parse(e.target.value);
+              setForm((prev) => ({
+                ...prev,
+                caseStudies: (prev.caseStudies ?? []).map((c, i) => (i === idx ? parsed : c)),
+              }));
+            } catch {}
+          }}
+        />
+        <button
+          type=\"button\"
+          onClick={() =>
+            setForm((prev) => ({
+              ...prev,
+              caseStudies: (prev.caseStudies ?? []).filter((_, i) => i !== idx),
+            }))
+          }
+          className=\"p-1 text-red-700 hover:bg-red-50 rounded\"
+        >
+          <Trash2 className=\"h-4 w-4\" />
+        </button>
+      </div>
+    ))}
+    <button
+      type=\"button\"
+      onClick={() =>
+        setForm((prev) => ({
+          ...prev,
+          caseStudies: [...(prev.caseStudies ?? []), {}],
+        }))
+      }
+      className=\"inline-flex items-center gap-1 text-sm font-medium text-[#243629]\"
+    >
+      <Plus className=\"h-4 w-4\" /> Add case study
+    </button>
+  </div>
+</SectionCard>
+
+<SectionCard title=\"Packages\">
+  <div className=\"space-y-4\">
+    {(form.packages ?? []).map((item, idx) => (
+      <div key={idx} className=\"flex items-center gap-2\">
+        <textarea
+          rows={3}
+          className={fieldClass}
+          value={JSON.stringify(item, null, 2)}
+          onChange={(e) => {
+            try {
+              const parsed = JSON.parse(e.target.value);
+              setForm((prev) => ({
+                ...prev,
+                packages: (prev.packages ?? []).map((p, i) => (i === idx ? parsed : p)),
+              }));
+            } catch {}
+          }}
+        />
+        <button
+          type=\"button\"
+          onClick={() =>
+            setForm((prev) => ({
+              ...prev,
+              packages: (prev.packages ?? []).filter((_, i) => i !== idx),
+            }))
+          }
+          className=\"p-1 text-red-700 hover:bg-red-50 rounded\"
+        >
+          <Trash2 className=\"h-4 w-4\" />
+        </button>
+      </div>
+    ))}
+    <button
+      type=\"button\"
+      onClick={() =>
+        setForm((prev) => ({
+          ...prev,
+          packages: [...(prev.packages ?? []), {}],
+        }))
+      }
+      className=\"inline-flex items-center gap-1 text-sm font-medium text-[#243629]\"
+    >
+      <Plus className=\"h-4 w-4\" /> Add package
+    </button>
+  </div>
+</SectionCard>
+
+<SectionCard title=\"FAQs\">
+  <div className=\"space-y-4\">
+    {(form.faqs ?? []).map((item, idx) => (
+      <div key={idx} className=\"flex items-center gap-2\">
+        <textarea
+          rows={3}
+          className={fieldClass}
+          value={JSON.stringify(item, null, 2)}
+          onChange={(e) => {
+            try {
+              const parsed = JSON.parse(e.target.value);
+              setForm((prev) => ({
+                ...prev,
+                faqs: (prev.faqs ?? []).map((f, i) => (i === idx ? parsed : f)),
+              }));
+            } catch {}
+          }}
+        />
+        <button
+          type=\"button\"
+          onClick={() =>
+            setForm((prev) => ({
+              ...prev,
+              faqs: (prev.faqs ?? []).filter((_, i) => i !== idx),
+            }))
+          }
+          className=\"p-1 text-red-700 hover:bg-red-50 rounded\"
+        >
+          <Trash2 className=\"h-4 w-4\" />
+        </button>
+      </div>
+    ))}
+    <button
+      type=\"button\"
+      onClick={() =>
+        setForm((prev) => ({
+          ...prev,
+          faqs: [...(prev.faqs ?? []), {}],
+        }))
+      }
+      className=\"inline-flex items-center gap-1 text-sm font-medium text-[#243629]\"
+    >
+      <Plus className=\"h-4 w-4\" /> Add FAQ
+    </button>
+  </div>
+</SectionCard>
+*/}
+<div className=\"sticky bottom-0 flex justify-end border-t border-[#E2D9C6] bg-[#FAF6EC]/95 py-4 backdrop-blur\">
         <button
           type="button"
           onClick={handleSave}
